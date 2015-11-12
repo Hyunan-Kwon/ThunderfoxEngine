@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A72A9333-FBE6-476A-B008-2F53DF0581B7}</ProjectGuid>
+    <RootNamespace>ThunderFox</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="TFCamera.cpp" />
+    <ClCompile Include="TFCommon.cpp" />
+    <ClCompile Include="TFHandle.cpp" />
+    <ClCompile Include="TFObject.cpp" />
+    <ClCompile Include="TFTextureManager.cpp" />
+    <ClCompile Include="TFThunderFox.cpp" />
+    <ClCompile Include="tiny_obj_loader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TFCamera.h" />
+    <ClInclude Include="TFCommon.h" />
+    <ClInclude Include="TFFont.h" />
+    <ClInclude Include="TFGameobject.h" />
+    <ClInclude Include="TFGizmo.h" />
+    <ClInclude Include="TFHandle.h" />
+    <ClInclude Include="TFAutoreleasePool.h" />
+    <ClInclude Include="TFModel.h" />
+    <ClInclude Include="TFTimer.h" />
+    <ClInclude Include="_TFModel.h" />
+    <ClInclude Include="TFObject.h" />
+    <ClInclude Include="TFPrimitive.h" />
+    <ClInclude Include="TFShader.h" />
+    <ClInclude Include="TFControl.h" />
+    <ClInclude Include="TFShaderManager.h" />
+    <ClInclude Include="TFTexture.h" />
+    <ClInclude Include="TFTextureManager.h" />
+    <ClInclude Include="TFThunderFox.h" />
+    <ClInclude Include="TFTransform.h" />
+    <ClInclude Include="tiny_obj_loader.h" />
+    <ClInclude Include="TFBuffer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BilateralFilter.vert" />
+    <None Include="DirectionalLight.frag" />
+    <None Include="DirectionalLight.vert" />
+    <None Include="Gizmo.frag" />
+    <None Include="Gizmo.vert" />
+    <None Include="ScaledDuplication.geom" />
+    <None Include="HorizontalDuplication.geom" />
+    <None Include="PhongLighting.frag" />
+    <None Include="PhongLighting.vert" />
+    <None Include="PixelShift.frag" />
+    <None Include="ShadowMap.frag" />
+    <None Include="ShadowMap.vert" />
+    <None Include="SSAO.frag" />
+    <None Include="TextureOnly.frag" />
+    <None Include="simple.vert" />
+    <None Include="SimpleFrame.frag" />
+    <None Include="Screen.vert" />
+    <None Include="SingleColor.frag" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
