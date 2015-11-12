@@ -57,7 +57,7 @@ public:
 		}
 		else{
 			TFLOG("Impossible to open \"%s\". Are you in the right directory?", filename);
-			return nullptr;
+			TFEXIT();
 		}
 
 		std::string strType;
@@ -76,8 +76,7 @@ public:
 			strType = "compute";
 			break;
 		default:
-			TFLOG("Compiling shader failure. Unsupported shader type.");
-			return nullptr;
+			TFEXIT("Compiling shader failure. Unsupported shader type.");
 		}
 
 		// Compile vertex shader.

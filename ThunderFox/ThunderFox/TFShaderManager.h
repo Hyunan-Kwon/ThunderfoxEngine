@@ -65,11 +65,13 @@ public:
 	}
 
 	void init() {
-		TFShader *shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Screen.vert"), TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "TextureOnly.frag"));
+		TFShader *shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/Screen.vert"),
+											TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/TextureOnly.frag"));
 		shader->getUniformLocation("Texture00");
 		this->enroll("Screen", shader);
 
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "DirectionalLight.vert"), TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "DirectionalLight.frag"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/DirectionalLight.vert"),
+								TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/DirectionalLight.frag"));
 		shader->getUniformLocation("Texture00");
 		shader->getUniformLocation("M");
 		shader->getUniformLocation("V");
@@ -82,11 +84,13 @@ public:
 		shader->getUniformLocation("MaterialShininess");
 		this->enroll("DirectionalLight", shader);
 
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Gizmo.vert"), TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Gizmo.frag"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/Gizmo.vert"),
+								TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/Gizmo.frag"));
 		shader->getUniformLocation("MVP");
 		this->enroll("Gizmo", shader);
 
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Screen.vert"), TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "SSAO.frag"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/Screen.vert"),
+								TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/SSAO.frag"));
 		shader->getUniformLocation("DepthTexture");
 		shader->getUniformLocation("NormalTexture");
 		shader->getUniformLocation("RenderedTexture");
@@ -94,18 +98,20 @@ public:
 		shader->getUniformLocation("P");
 		this->enroll("SSAO", shader);
 
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "simple.vert"), TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "SingleColor.frag"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/simple.vert"),
+								TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/SingleColor.frag"));
 		shader->getUniformLocation("M");
 		shader->getUniformLocation("V");
 		shader->getUniformLocation("P");
 		shader->getUniformLocation("Color");
 		this->enroll("SingleColor", shader);
 
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "ShadowMap.vert"), TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "ShadowMap.frag"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/ShadowMap.vert"),
+								TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/ShadowMap.frag"));
 		shader->getUniformLocation("MVP");
 		this->enroll("ShadowMap", shader);
 		
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_COMPUTE_SHADER, "BilateralFilter.vert"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_COMPUTE_SHADER, "Shaders/BilateralFilter.vert"));
 		shader->getUniformLocation("roll");
 		shader->getUniformLocation("destTex");
 		this->enroll("Compute", shader);

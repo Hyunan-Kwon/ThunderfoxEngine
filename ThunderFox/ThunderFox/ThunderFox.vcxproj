@@ -66,6 +66,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\tinyobjloader\tiny_obj_loader.cc" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TFCamera.cpp" />
     <ClCompile Include="TFCommon.cpp" />
@@ -73,9 +74,9 @@
     <ClCompile Include="TFObject.cpp" />
     <ClCompile Include="TFTextureManager.cpp" />
     <ClCompile Include="TFThunderFox.cpp" />
-    <ClCompile Include="tiny_obj_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\tinyobjloader\tiny_obj_loader.h" />
     <ClInclude Include="TFCamera.h" />
     <ClInclude Include="TFCommon.h" />
     <ClInclude Include="TFFont.h" />
@@ -95,28 +96,27 @@
     <ClInclude Include="TFTextureManager.h" />
     <ClInclude Include="TFThunderFox.h" />
     <ClInclude Include="TFTransform.h" />
-    <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="TFBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BilateralFilter.vert" />
-    <None Include="DirectionalLight.frag" />
-    <None Include="DirectionalLight.vert" />
-    <None Include="Gizmo.frag" />
-    <None Include="Gizmo.vert" />
-    <None Include="ScaledDuplication.geom" />
-    <None Include="HorizontalDuplication.geom" />
-    <None Include="PhongLighting.frag" />
-    <None Include="PhongLighting.vert" />
-    <None Include="PixelShift.frag" />
-    <None Include="ShadowMap.frag" />
-    <None Include="ShadowMap.vert" />
-    <None Include="SSAO.frag" />
-    <None Include="TextureOnly.frag" />
-    <None Include="simple.vert" />
-    <None Include="SimpleFrame.frag" />
-    <None Include="Screen.vert" />
-    <None Include="SingleColor.frag" />
+    <None Include="Shaders\BilateralFilter.vert" />
+    <None Include="Shaders\DirectionalLight.frag" />
+    <None Include="Shaders\DirectionalLight.vert" />
+    <None Include="Shaders\Gizmo.frag" />
+    <None Include="Shaders\Gizmo.vert" />
+    <None Include="Shaders\HorizontalDuplication.geom" />
+    <None Include="Shaders\PhongLighting.frag" />
+    <None Include="Shaders\PhongLighting.vert" />
+    <None Include="Shaders\PixelShift.frag" />
+    <None Include="Shaders\ScaledDuplication.geom" />
+    <None Include="Shaders\Screen.vert" />
+    <None Include="Shaders\ShadowMap.frag" />
+    <None Include="Shaders\ShadowMap.vert" />
+    <None Include="Shaders\simple.vert" />
+    <None Include="Shaders\SimpleFrame.frag" />
+    <None Include="Shaders\SingleColor.frag" />
+    <None Include="Shaders\SSAO.frag" />
+    <None Include="Shaders\TextureOnly.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

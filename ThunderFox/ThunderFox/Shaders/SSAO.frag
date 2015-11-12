@@ -9,6 +9,8 @@ uniform sampler2D NormalTexture;
 uniform sampler2D RenderedTexture;
 uniform sampler2D PositionTexture;
 uniform mat4 P;
+uniform vec3 LightColor;
+
 const float DistanceThreshold = 0.05;
 const vec2 FilterRadius = vec2(20.0/1024.0, 20.0/768.0);
 
@@ -76,12 +78,16 @@ void main(){
 		ambientOcclusion += (a * b);
 	}
 
-	ambientOcclusion = 1.0 - 2 * ambientOcclusion / sample_count;
+	ambientOcclusion = 1.0 - ambientOcclusion / sample_count;
+	ambientOcclusion = ambientOcclusion * 0.5 + 0.5;
 	//ambientOcclusion = clamp(ambientOcclusion, 0.0, 1.0);
 
 	//FragColor =  vec4(texture(RenderedTexture, UV).xyz * ambientOcclusion, 1.0);
+
+	vec3 AO_color = vec3(1.0) - LightColor * ambientOcclusion;
+
 	if(UV.x > 0.5){
-	FragColor = vec4(ambientOcclusion * texture(RenderedTexture, UV).xyz, 1.0);
+	FragColor = vec4(texture(RenderedTexture, UV).xyz - AO_color, 1.0);
 	}
 	else{
 	FragColor = texture(RenderedTexture, UV);

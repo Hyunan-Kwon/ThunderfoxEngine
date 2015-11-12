@@ -13,8 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\shaders">
+    <Filter Include="External library sources">
+      <UniqueIdentifier>{079816cb-bcbe-4426-95bc-8be15f6cfcb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
       <UniqueIdentifier>{285652c6-2d1b-4657-bf03-852f104dbbe4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External library sources\tinyobjloader">
+      <UniqueIdentifier>{6ab56537-9cf1-4b6c-93fd-e6457a88567b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,9 +36,6 @@
     <ClCompile Include="TFObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="tiny_obj_loader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="TFCommon.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -41,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="TFCamera.cpp">
       <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tinyobjloader\tiny_obj_loader.cc">
+      <Filter>External library sources\tinyobjloader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,9 +66,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TFGameobject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="tiny_obj_loader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TFCamera.h">
@@ -107,61 +110,64 @@
     <ClInclude Include="TFTimer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="..\tinyobjloader\tiny_obj_loader.h">
+      <Filter>External library sources\tinyobjloader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="simple.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\DirectionalLight.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="PhongLighting.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\DirectionalLight.vert">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="PhongLighting.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\Gizmo.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="PixelShift.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\Gizmo.vert">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="HorizontalDuplication.geom">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\HorizontalDuplication.geom">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="ScaledDuplication.geom">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\PhongLighting.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="SimpleFrame.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\PhongLighting.vert">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="SingleColor.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\PixelShift.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="DirectionalLight.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\ScaledDuplication.geom">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="DirectionalLight.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\Screen.vert">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="Gizmo.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\ShadowMap.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="Gizmo.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\ShadowMap.vert">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="TextureOnly.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\simple.vert">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="Screen.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\SimpleFrame.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="SSAO.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\SingleColor.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="ShadowMap.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\SSAO.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="ShadowMap.frag">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\TextureOnly.frag">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="BilateralFilter.vert">
-      <Filter>소스 파일\shaders</Filter>
+    <None Include="Shaders\BilateralFilter.vert">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

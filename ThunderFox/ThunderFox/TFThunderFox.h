@@ -409,6 +409,7 @@ public:
 				glActiveTexture(GL_TEXTURE3);
 				tex_position->bind();
 
+				glUniform3f(shader->getUniformLocation("LightColor"), lightColor.x, lightColor.y, lightColor.z);
 				glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &control.getProjectionMatrix()[0][0]);
 
 				glEnableVertexAttribArray(0);
