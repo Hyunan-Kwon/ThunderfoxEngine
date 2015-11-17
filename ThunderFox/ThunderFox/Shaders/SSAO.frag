@@ -52,10 +52,10 @@ vec3 backProjection(mat4 invP, vec3 p_ndc){
 //}
 
 float calcGradient(mat4 invP, vec2 texcoord, vec2 texelsize){
-	float up = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(0.0, -texelsize.y)).r) * 2.0 - 1.0); 
-	float down = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(0.0, texelsize.y)).r) * 2.0 - 1.0);
-	float left = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(-texelsize.x, 0.0)).r) * 2.0 - 1.0);
-	float right = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(texelsize.x, 0.0)).r) * 2.0 - 1.0);
+	float up = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(0.0, -texelsize.y)).r) * 2.0 - 1.0).z; 
+	float down = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(0.0, texelsize.y)).r) * 2.0 - 1.0).z;
+	float left = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(-texelsize.x, 0.0)).r) * 2.0 - 1.0).z;
+	float right = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(texelsize.x, 0.0)).r) * 2.0 - 1.0).z;
 
 	return abs(up - down) + abs(left - right);
 }
@@ -118,7 +118,9 @@ void main(){
 	else{
 		float foo = dot(normal, vec3(0, 0, 1));
 		foo = 2.0 - foo;
-		vec3 paper = texture(PaperTexture, foo * UV).xyz;
+		//vec3 paper = texture(PaperTexture, texture(PositionTexture, UV).xy).xyz;
+		vec3 paper = texture(PaperTexture, UV - texture(PositionTexture, UV).xy).xyz;
+		//vec3 paper = texture(PaperTexture, UV).xyz;
 
 		float gradient = 1.0 - clamp(calcGradient2(invP, UV, texelSize), 0.0, 1.0);
 		gradient = smoothstep(edge0, edge1, gradient);
@@ -127,5 +129,10 @@ void main(){
 		color = color * paper;
 		color = color * ambientOcclusion;
 		FragColor = vec4(color, 1.0);
+		//FragColor = vec4(paper, 1.0);
 	}
+
+	//FragColor = vec4(texture(PaperTexture, (UV + texture(PositionTexture, UV).xy) * 0.5).xyz, 1.0);
+	//FragColor = vec4(texture(PaperTexture, texture(PositionTexture, UV).xy).xyz, 1.0);
+	//FragColor = vec4(texture(PositionTexture, UV).xyz, 1.0);
 }

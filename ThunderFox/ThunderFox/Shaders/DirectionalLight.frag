@@ -100,7 +100,10 @@ void main(){
 		+ specularIntensity * MaterialSpecularColor * vec4(LightColor, 1.0);
 
 	Normal = (N + 1.0) * 0.5;
-	Position = VertexIn.Position_cameraspace.xyz;
+	//Position = VertexIn.Position_cameraspace.xyz;
 
-	FragColor = vec4(midpoint.xy, 0.0, 1.0);
+	//midpoint = P *vec4(midpoint, 1.0);
+	//Position = vec3(midpoint.xy, 0.0);
+	Position = midpoint;
+	//FragColor = vec4(midpoint.xy, 0.0, 1.0);
 } 
