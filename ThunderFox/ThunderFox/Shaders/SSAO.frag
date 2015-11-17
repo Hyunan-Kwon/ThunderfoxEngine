@@ -8,11 +8,15 @@ uniform sampler2D DepthTexture;
 uniform sampler2D NormalTexture;
 uniform sampler2D RenderedTexture;
 uniform sampler2D PositionTexture;
+uniform sampler2D PaperTexture;
 uniform mat4 P;
 uniform vec3 LightColor;
 
+uniform float edge0, edge1;
+
 const float DistanceThreshold = 0.05;
 const vec2 FilterRadius = vec2(20.0/1024.0, 20.0/768.0);
+const vec2 texelSize = vec2(1.0/1024.0, 1.0/768.0);
 
 const int sample_count = 16;
 const vec2 poisson16[] = vec2[](    // These are the Poisson Disk Samples
@@ -46,6 +50,28 @@ vec3 backProjection(mat4 invP, vec3 p_ndc){
 //	float z = (normalXY.x * normalXY.x + normalXY.y * normalXY.y) * 2.0 - 1.0;
 //	return vec3(normalXY, z);
 //}
+
+float calcGradient(mat4 invP, vec2 texcoord, vec2 texelsize){
+	float up = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(0.0, -texelsize.y)).r) * 2.0 - 1.0); 
+	float down = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(0.0, texelsize.y)).r) * 2.0 - 1.0);
+	float left = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(-texelsize.x, 0.0)).r) * 2.0 - 1.0);
+	float right = backProjection(invP, vec3(texcoord, texture(DepthTexture, texcoord + vec2(texelsize.x, 0.0)).r) * 2.0 - 1.0);
+
+	return abs(up - down) + abs(left - right);
+}
+
+float getYColor(vec3 c){
+	return c.r *  .299000 + c.g *  .587000 + c.b *  .114000;
+}
+
+float calcGradient2(mat4 invP, vec2 texcoord, vec2 texelSize){
+	float up = getYColor(texture(RenderedTexture, texcoord + vec2(0.0, -texelSize.y)).rgb);
+	float down = getYColor(texture(RenderedTexture, texcoord + vec2(0.0, texelSize.y)).rgb);
+	float left = getYColor(texture(RenderedTexture, texcoord + vec2(-texelSize.x, 0.0)).rgb);
+	float right = getYColor(texture(RenderedTexture, texcoord + vec2(texelSize.x, 0.0)).rgb);
+
+	return abs(up - down) + abs(left - right);
+}
 
 void main(){
 	float depth = texture(DepthTexture, UV).r;
@@ -87,12 +113,19 @@ void main(){
 	vec3 AO_color = vec3(1.0) - LightColor * ambientOcclusion;
 
 	if(UV.x > 0.5){
-	FragColor = vec4(texture(RenderedTexture, UV).xyz - AO_color, 1.0);
+		FragColor = vec4(texture(RenderedTexture, UV).xyz - AO_color, 1.0);
 	}
 	else{
-	FragColor = texture(RenderedTexture, UV);
-	}
-	//FragColor = vec4(pos, 1.0);
+		float foo = dot(normal, vec3(0, 0, 1));
+		foo = 2.0 - foo;
+		vec3 paper = texture(PaperTexture, foo * UV).xyz;
 
-	//FragColor = texture(RenderedTexture, UV);
+		float gradient = 1.0 - clamp(calcGradient2(invP, UV, texelSize), 0.0, 1.0);
+		gradient = smoothstep(edge0, edge1, gradient);
+		//FragColor = vec4(vec3(gradient), 1.0);
+		vec3 color = gradient * texture(RenderedTexture, UV).xyz;
+		color = color * paper;
+		color = color * ambientOcclusion;
+		FragColor = vec4(color, 1.0);
+	}
 }

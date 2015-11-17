@@ -37,6 +37,9 @@ enum TFWindowSize{
 	TF_WINDOWSIZE_1024_768,
 };
 
+float edge0 = 0.0f, edge1 = 1.0f;
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 class TFThunderFox{
 private:
 	std::string m_windowTitle;
@@ -50,6 +53,9 @@ private:
 
 	TFThunderFox(TFThunderFox const&);
 	TFThunderFox operator = (TFThunderFox const&);
+
+
+
 public:
 	TFThunderFox()
 	:m_windowTitle("ThunderFox"), m_windowSize(TF_WINDOWSIZE_1024_768) {//, m_lastTime(0.0), m_deltaTime(0.0f){
@@ -73,6 +79,7 @@ public:
 		glfwMakeContextCurrent(m_window);
 		glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE); // Ensure we can capture the escape key.
 		glfwSetCursorPos(m_window, 1024.0 / 2.0, 768.0 / 2.0);
+		glfwSetKeyCallback(m_window, keyboard);
 
 		// Init glew.
 		glewExperimental = true; // Needed for core profile.
@@ -212,8 +219,10 @@ public:
 		glm::mat4 depth_viewMatrix;
 		glm::mat4 depth_MVP;
 
+		TFTexture2D *tex_paper = TFTexture2D::createWithFile("Resources/Images/paper_texture.jpg");
+		tex_paper->setWrap(GL_REPEAT, GL_REPEAT);
+		tex_paper->retain();
 		//std::deque<float> deltaTimes;
-
 		do{
 			//double currentTime = glfwGetTime();
 			//m_deltaTime = float(currentTime - m_lastTime);
@@ -409,8 +418,14 @@ public:
 				glActiveTexture(GL_TEXTURE3);
 				tex_position->bind();
 
+				glUniform1i(shader->getUniformLocation("PaperTexture"), 4);
+				glActiveTexture(GL_TEXTURE4);
+				tex_paper->bind();
+
 				glUniform3f(shader->getUniformLocation("LightColor"), lightColor.x, lightColor.y, lightColor.z);
 				glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &control.getProjectionMatrix()[0][0]);
+				glUniform1f(shader->getUniformLocation("edge0"), edge0);
+				glUniform1f(shader->getUniformLocation("edge1"), edge1);
 
 				glEnableVertexAttribArray(0);
 				TFFramework::vertexBuffer_quad->bind();
@@ -487,9 +502,34 @@ public:
 			break;
 		}
 	}
+
+
 	//float getDeltaTime() const{
 	//	return m_deltaTime;
 	//}
 };
+
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
+	if (action == GLFW_PRESS){
+		switch (key)
+		{
+		case GLFW_KEY_MINUS:
+			edge0 -= 0.1f;
+			break;
+		case GLFW_KEY_EQUAL:
+			edge0 += 0.1f;
+			break;
+		case GLFW_KEY_LEFT_BRACKET:
+			edge1 -= 0.1f;
+			break;
+		case GLFW_KEY_RIGHT_BRACKET:
+			edge1 += 0.1f;
+			break;
+		default:
+			break;
+		}
+		std::cout << edge0 << " " << edge1 << std::endl;
+	}
+}
 
 #endif

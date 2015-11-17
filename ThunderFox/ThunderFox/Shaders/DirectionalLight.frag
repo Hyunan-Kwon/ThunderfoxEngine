@@ -1,11 +1,15 @@
 #version 330 core
 
-in vec3 Normal_cameraspace;
-in vec2 UV;
-in vec3 EyeDirection_cameraspace;
-in vec4 ShadowCoord;
-in vec4 Position_worldspace;
-in vec4 Position_cameraspace;
+in VertexData{
+    vec3 Normal_cameraspace;
+    vec2 UV;
+    vec3 EyeDirection_cameraspace;
+    vec4 ShadowCoord;
+    vec4 Position_worldspace;
+    vec4 Position_cameraspace;
+} VertexIn;
+
+flat in vec3 midpoint;
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec3 Normal;
@@ -49,14 +53,14 @@ float random(vec3 seed, int i){
 void main(){
 	vec3 LightDirection_cameraspace = (V * vec4(LightDirection_worldspace, 0)).xyz;
 
-	vec4 MaterialDiffuseColor = vec4(MaterialDiffuse, 1.0) * texture(Texture00, UV);
-	vec4 MaterialAmbientColor = vec4(MaterialAmbient, 1.0) * texture(Texture00, UV);
+	vec4 MaterialDiffuseColor = vec4(MaterialDiffuse, 1.0) * texture(Texture00, VertexIn.UV);
+	vec4 MaterialAmbientColor = vec4(MaterialAmbient, 1.0) * texture(Texture00, VertexIn.UV);
 	vec4 MaterialSpecularColor = vec4(MaterialSpecular, 1.0);
 	float shininess = MaterialShininess > 0? MaterialShininess : 1;
 
 	vec3 L = normalize(LightDirection_cameraspace);
-	vec3 N = normalize(Normal_cameraspace);
-	vec3 E = normalize(EyeDirection_cameraspace);
+	vec3 N = normalize(VertexIn.Normal_cameraspace);
+	vec3 E = normalize(VertexIn.EyeDirection_cameraspace);
 	vec3 R = reflect(-L, N);
 
 	//float diffuseIntensity = clamp((dot(N, L) + 1.0) * 0.5, 0.0, 1.0);	// Half Lambert
@@ -96,5 +100,7 @@ void main(){
 		+ specularIntensity * MaterialSpecularColor * vec4(LightColor, 1.0);
 
 	Normal = (N + 1.0) * 0.5;
-	Position = Position_cameraspace.xyz;
+	Position = VertexIn.Position_cameraspace.xyz;
+
+	FragColor = vec4(midpoint.xy, 0.0, 1.0);
 } 

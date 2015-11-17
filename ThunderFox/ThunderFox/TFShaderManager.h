@@ -71,6 +71,7 @@ public:
 		this->enroll("Screen", shader);
 
 		shader = TFShader::create(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, "Shaders/DirectionalLight.vert"),
+								TFShaderUnit::createWithFile(GL_GEOMETRY_SHADER, "Shaders/Midpoint.geom"),
 								TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, "Shaders/DirectionalLight.frag"));
 		shader->getUniformLocation("Texture00");
 		shader->getUniformLocation("M");

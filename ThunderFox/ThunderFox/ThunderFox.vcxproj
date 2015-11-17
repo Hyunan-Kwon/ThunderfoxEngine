@@ -105,6 +105,7 @@
     <None Include="Shaders\Gizmo.frag" />
     <None Include="Shaders\Gizmo.vert" />
     <None Include="Shaders\HorizontalDuplication.geom" />
+    <None Include="Shaders\Midpoint.geom" />
     <None Include="Shaders\PhongLighting.frag" />
     <None Include="Shaders\PhongLighting.vert" />
     <None Include="Shaders\PixelShift.frag" />
