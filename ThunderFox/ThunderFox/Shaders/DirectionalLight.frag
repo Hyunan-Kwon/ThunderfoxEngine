@@ -13,7 +13,7 @@ flat in vec3 midpoint;
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec3 Normal;
-layout(location = 2) out vec3 Position;
+layout(location = 2) out vec2 Position;
 layout(location = 3) out float Visibility;
 
 uniform sampler2D Texture00;
@@ -104,6 +104,7 @@ void main(){
 
 	//midpoint = P *vec4(midpoint, 1.0);
 	//Position = vec3(midpoint.xy, 0.0);
-	Position = midpoint;
+	Position = midpoint.xy;
+	//Position = vec2((gl_FragCoord.x - 0.5) / 1024.0, (gl_FragCoord.y - 0.5) / 768.0);
 	//FragColor = vec4(midpoint.xy, 0.0, 1.0);
 } 

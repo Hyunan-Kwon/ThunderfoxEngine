@@ -34,7 +34,6 @@ void main(){
 	vec4 mp = P * vec4(_mp, 1.0);
 	mp /= mp.w;
 	mp = (mp + 1.0) * 0.5;
-	_mp = mp.xyz;
 
 	for(int i = 0; i < gl_in.length(); ++i){
 		gl_Position = gl_in[i].gl_Position;
@@ -45,7 +44,8 @@ void main(){
         VertexOut.ShadowCoord = VertexIn[i].ShadowCoord;
 		VertexOut.Position_worldspace = VertexIn[i].Position_worldspace;
 		VertexOut.Position_cameraspace = VertexIn[i].Position_cameraspace;
-		midpoint = vec3(clamp(_mp.x, 0.0, 1.0), clamp(_mp.y, 0.0, 1.0), 0.0);
+		midpoint = mp.xyz;
+		//midpoint = vec3(clamp(_mp.x, 0.0, 1.0), clamp(_mp.y, 0.0, 1.0), 0.0);
 
 		EmitVertex();
 	}

@@ -70,6 +70,7 @@ public:
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL.
 
 		// Open a window and create its OpenGL context.
+		//m_window = glfwCreateWindow(1024, 768, "ThunderFox", glfwGetPrimaryMonitor(), nullptr); // full screen.
 		m_window = glfwCreateWindow(1024, 768, "ThunderFox", nullptr, nullptr);
 		if (m_window == nullptr){
 			fprintf(stderr, "Failed to open GLFW window, If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version.\n");
@@ -103,6 +104,7 @@ public:
 		m_framerateTimer = TFFrameRateTimer::create();
 		m_framerateTimer->retain();
 		//m_framerateTimer->start();
+
 	}
 
 	~TFThunderFox(){
@@ -117,19 +119,34 @@ public:
 		//TFTexture2D *tttt = TFTexture2D::createWithFile("meshes/san-miguel/Maps/madera_barandal_esc_2.jpg");
 		//TFTextureManager::getInstance().loadTexture("TEST", "meshes/san-miguel/Maps/madera_barandal_esc_2.jpg");
 
+		GLfloat maxAniso = 0.0f;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
+
+		GLuint samplerID;
+		glGenSamplers(1, &samplerID);
+		glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		//glSamplerParameteri(samplerID, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAniso);
+		TFCHKGL(__FILE__, __LINE__);
+
+		TFLOG("aniso : %d", glewIsExtensionSupported("GL_EXT_texture_filter_anisotropic"));
+
+
+
 		GLuint vertexArrayID;
 		glGenVertexArrays(1, &vertexArrayID);
 		glBindVertexArray(vertexArrayID);
 
 		/////////////////////////////////// FRAMEBUFFER
 
-
 		TFTexture2D *tex_render = TFTexture2D::createEmpty(GL_RGBA, 1024, 768, GL_RGBA, GL_FLOAT);
 		tex_render->retain();
 		TFTexture2D *tex_normal = TFTexture2D::createEmpty(GL_RGB, 1024, 768, GL_RGB, GL_FLOAT);
 		tex_normal->setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 		tex_normal->retain();
-		TFTexture2D *tex_position = TFTexture2D::createEmpty(GL_RGB, 1024, 768, GL_RGB, GL_FLOAT);
+		TFTexture2D *tex_position = TFTexture2D::createEmpty(GL_RG16F, 1024, 768, GL_RG, GL_FLOAT);
 		tex_position->setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 		tex_position->retain();
 		TFTexture2D *tex_visibility = TFTexture2D::createEmpty(GL_R32F, 1024, 768, GL_RED, GL_FLOAT);
@@ -222,6 +239,7 @@ public:
 		TFTexture2D *tex_paper = TFTexture2D::createWithFile("Resources/Images/paper_texture.jpg");
 		tex_paper->setWrap(GL_REPEAT, GL_REPEAT);
 		tex_paper->retain();
+		//glBindSampler(tex_paper->getID(), samplerID);
 		//std::deque<float> deltaTimes;
 		do{
 			//double currentTime = glfwGetTime();
@@ -402,23 +420,26 @@ public:
 			shader = TFShaderManager::getInstance()->getShader("SSAO");
 			glUseProgram(shader->getID());
 			{
-				glUniform1i(shader->getUniformLocation("DepthTexture"), 0);
+				//glUniform1i(shader->getUniformLocation("DepthTexture"), 0);
 				glActiveTexture(GL_TEXTURE0);
 				tex_depth->bind();
 
-				glUniform1i(shader->getUniformLocation("NormalTexture"), 1);
+				//glUniform1i(shader->getUniformLocation("NormalTexture"), 1);
 				glActiveTexture(GL_TEXTURE1);
 				tex_normal->bind();
 
-				glUniform1i(shader->getUniformLocation("RenderedTexture"), 2);
+
+				//glBindSampler(2, samplerID);
+
+				//glUniform1i(shader->getUniformLocation("RenderedTexture"), 2);
 				glActiveTexture(GL_TEXTURE2);
 				tex_render->bind();
 
-				glUniform1i(shader->getUniformLocation("PositionTexture"), 3);
+				//glUniform1i(shader->getUniformLocation("PositionTexture"), 3);
 				glActiveTexture(GL_TEXTURE3);
 				tex_position->bind();
 
-				glUniform1i(shader->getUniformLocation("PaperTexture"), 4);
+				//glUniform1i(shader->getUniformLocation("PaperTexture"), 4);
 				glActiveTexture(GL_TEXTURE4);
 				tex_paper->bind();
 
@@ -436,6 +457,7 @@ public:
 				glDisableVertexAttribArray(0);
 			}
 			TFCHKGL(__FILE__, __LINE__, "", true);
+			glBindSampler(2, 0);
 
 			//shader = TFShaderManager::getInstance()->getShader("Screen");
 			//glUseProgram(shader->getID());

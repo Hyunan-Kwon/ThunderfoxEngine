@@ -1,14 +1,21 @@
-#version 330 core
+//#version 330 core
+#version 430
 
 in vec2 UV;
 
 out vec4 FragColor;
 
-uniform sampler2D DepthTexture;
-uniform sampler2D NormalTexture;
-uniform sampler2D RenderedTexture;
-uniform sampler2D PositionTexture;
-uniform sampler2D PaperTexture;
+//uniform sampler2D DepthTexture;
+//uniform sampler2D NormalTexture;
+//uniform sampler2D RenderedTexture;
+//uniform sampler2D PositionTexture;
+//uniform sampler2D PaperTexture;
+layout(binding = 0) uniform sampler2D DepthTexture;
+layout(binding = 1) uniform sampler2D NormalTexture;
+layout(binding = 2) uniform sampler2D RenderedTexture;
+layout(binding = 3) uniform sampler2D PositionTexture;
+layout(binding = 4) uniform sampler2D PaperTexture;
+
 uniform mat4 P;
 uniform vec3 LightColor;
 
@@ -105,7 +112,7 @@ void main(){
 	}
 
 	ambientOcclusion = 1.0 - ambientOcclusion / sample_count;
-	ambientOcclusion = ambientOcclusion * 0.5 + 0.5;
+	//ambientOcclusion = ambientOcclusion * 0.5 + 0.5;
 	//ambientOcclusion = clamp(ambientOcclusion, 0.0, 1.0);
 
 	//FragColor =  vec4(texture(RenderedTexture, UV).xyz * ambientOcclusion, 1.0);
@@ -113,7 +120,8 @@ void main(){
 	vec3 AO_color = vec3(1.0) - LightColor * ambientOcclusion;
 
 	if(UV.x > 0.5){
-		FragColor = vec4(texture(RenderedTexture, UV).xyz - AO_color, 1.0);
+		//FragColor = vec4(texture(RenderedTexture, UV).xyz * AO_color, 1.0);
+		FragColor = vec4(texture(RenderedTexture, UV).xyz * ambientOcclusion, 1.0);
 	}
 	else{
 		float foo = dot(normal, vec3(0, 0, 1));
@@ -134,5 +142,11 @@ void main(){
 
 	//FragColor = vec4(texture(PaperTexture, (UV + texture(PositionTexture, UV).xy) * 0.5).xyz, 1.0);
 	//FragColor = vec4(texture(PaperTexture, texture(PositionTexture, UV).xy).xyz, 1.0);
-	//FragColor = vec4(texture(PositionTexture, UV).xyz, 1.0);
+
+	//FragColor = vec4(clamp(texture(PositionTexture, UV).xy, 0.0, 1.0), 0.0, 1.0);
+	//FragColor = vec4(texture(PositionTexture, UV).xy, 0.0, 1.0);
+	//int numShades = 30;
+	//float yColor = getYColor(texture(PositionTexture, UV).xyz);
+	//yColor = ceil(yColor * numShades)/numShades;
+	//FragColor = vec4(vec3(yColor), 1.0);
 }
