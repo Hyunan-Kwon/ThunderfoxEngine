@@ -53,29 +53,59 @@ public:
 
 class TFRenderBuffer : public TFBuffer {
 protected:
-	GLint m_format;
+	GLint m_internalFormat;
 	unsigned int m_width, m_height;
 
-	TFRenderBuffer(GLenum format, unsigned int width, unsigned int height)
-	: m_format(format), m_width(width), m_height(height) {
+	TFRenderBuffer(GLenum internalFormat, unsigned int width, unsigned int height)
+	: m_internalFormat(internalFormat), m_width(width), m_height(height) {
 		glGenRenderbuffers(1, &m_id);
 		glBindRenderbuffer(GL_RENDERBUFFER, m_id);
-		glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width, height);
 	}
 public:
 	virtual ~TFRenderBuffer(){
 		glDeleteRenderbuffers(1, &m_id);
 	}
 
-	static TFRenderBuffer* create(GLenum format, unsigned int width, unsigned int height) {
-		return static_cast<TFRenderBuffer *>((new TFRenderBuffer(format, width, height))->autorelease());
+	static TFRenderBuffer* create(GLenum internalFormat, unsigned int width, unsigned int height) {
+		return static_cast<TFRenderBuffer *>((new TFRenderBuffer(internalFormat, width, height))->autorelease());
 	}
 
 	virtual void bind() const{
 		glBindRenderbuffer(GL_RENDERBUFFER, m_id);
 	}
 
-	inline GLint getFormat() const { return m_format; }
+	inline GLint getInternalFormat() const { return m_internalFormat; }
+	inline unsigned int getWidth() const { return m_width; }
+	inline unsigned int getHeight() const { return m_height; }
+};
+
+class TFRenderBufferMultisample : public TFBuffer {
+protected:
+	GLint m_internalFormat;
+	unsigned int m_width, m_height, m_samples;
+
+	TFRenderBufferMultisample(GLsizei samples, GLenum internalFormat, unsigned int width, unsigned int height)
+		: m_internalFormat(internalFormat), m_width(width), m_height(height) {
+		glGenRenderbuffers(1, &m_id);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_id);
+		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width, height);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalFormat, width, height);
+	}
+public:
+	virtual ~TFRenderBufferMultisample(){
+		glDeleteRenderbuffers(1, &m_id);
+	}
+
+	static TFRenderBufferMultisample* create(GLsizei samples, GLenum internalFormat, unsigned int width, unsigned int height) {
+		return static_cast<TFRenderBufferMultisample *>((new TFRenderBufferMultisample(samples, internalFormat, width, height))->autorelease());
+	}
+
+	virtual void bind() const{
+		glBindRenderbuffer(GL_RENDERBUFFER, m_id);
+	}
+
+	inline GLint getInternalFormat() const { return m_internalFormat; }
 	inline unsigned int getWidth() const { return m_width; }
 	inline unsigned int getHeight() const { return m_height; }
 };
@@ -128,6 +158,9 @@ public:
 	inline void attachDepthStencil(TFRenderBuffer *buffer) const{
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, buffer->getID());
 	}
+	inline void attachDepthStencil(TFRenderBufferMultisample *buffer) const{
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, buffer->getID());
+	}
 
 	void windup() {
 		GLenum *drawBuffers = new GLenum[m_numColorAttachments];
@@ -141,6 +174,13 @@ public:
 			TFEXIT("Failed to initiate framebuffer.");
 		}
 		m_numColorAttachments = -1;
+	}
+
+	void blitToDefault(){
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_id);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, 1024, 768, 0, 0, 1024, 768, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	virtual void bind() const {

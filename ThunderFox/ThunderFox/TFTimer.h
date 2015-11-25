@@ -22,7 +22,7 @@ public:
 		m_start = glfwGetTime();
 	}
 
-	virtual double stop(){
+	double stop(){
 		if (m_start == -1){
 			return 0.0;
 		}
@@ -32,12 +32,13 @@ public:
 	}
 };
 
-class TFFrameRateTimer : public TFTimer{
+class TFFrameRateTimer : public TFRef{
 protected:
 	std::deque<double> m_deltaTimes;
+	double m_sum_deltaTimes;
 	unsigned int m_maxRecordSize;
 
-	TFFrameRateTimer(unsigned int maxRecordSize) : m_maxRecordSize(maxRecordSize) { }
+	TFFrameRateTimer(unsigned int maxRecordSize) : m_sum_deltaTimes(0.0), m_maxRecordSize(maxRecordSize) { }
 public:
 	static TFFrameRateTimer* create(unsigned int maxRecordSize = 30){
 		return static_cast<TFFrameRateTimer *>((new TFFrameRateTimer(maxRecordSize))->autorelease());
@@ -45,12 +46,17 @@ public:
 
 	virtual ~TFFrameRateTimer() { }
 
-	virtual double stop() {
-		m_deltaTimes.push_back(TFTimer::stop());
+	double elapse() {
+		static double lastTime = glfwGetTime();
+		double deltaTime = glfwGetTime() - lastTime;
+		m_sum_deltaTimes += deltaTime;
+		m_deltaTimes.push_back(deltaTime);
 		if (m_deltaTimes.size() > m_maxRecordSize){
+			m_sum_deltaTimes -= m_deltaTimes.front();
 			m_deltaTimes.pop_front();
 		}
-		return m_deltaTimes.back();
+		lastTime = glfwGetTime();
+		return deltaTime;
 	}
 
 	double getFPS() {
@@ -59,11 +65,7 @@ public:
 			return 0.0;
 		}
 
-		double average = 0.0;
-		for (auto &deltaTime : m_deltaTimes){
-			average += deltaTime;
-		}
-		average /= static_cast<double>(m_deltaTimes.size());
+		double average = m_sum_deltaTimes / static_cast<double>(m_deltaTimes.size());
 		return 1.0 / average;
 	}
 

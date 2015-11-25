@@ -96,7 +96,7 @@ protected:
 		// Link the program.
 		TFLOG("Linking program...");
 		m_id = glCreateProgram();
-		for each(auto &shaderUnit in shaderUnits){
+		for(auto &shaderUnit : shaderUnits){
 			glAttachShader(m_id, shaderUnit->getID());
 		}
 		glLinkProgram(m_id);

@@ -64,10 +64,11 @@ public:
 			fprintf(stderr, "Failed to initiate GLFW\n");
 			exit(EXIT_FAILURE);
 		}
-		glfwWindowHint(GLFW_SAMPLES, 4); // 4x Antialiasing.
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // Opengl 3.3
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		//glfwWindowHint(GLFW_SAMPLES, 4); // 4x Antialiasing.
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // Opengl 3.3
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL.
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 		// Open a window and create its OpenGL context.
 		//m_window = glfwCreateWindow(1024, 768, "ThunderFox", glfwGetPrimaryMonitor(), nullptr); // full screen.
@@ -122,14 +123,14 @@ public:
 		GLfloat maxAniso = 0.0f;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
 
-		GLuint samplerID;
-		glGenSamplers(1, &samplerID);
-		glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		//GLuint samplerID;
+		//glGenSamplers(1, &samplerID);
+		//glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		//glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		//glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		//glSamplerParameteri(samplerID, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAniso);
-		TFCHKGL(__FILE__, __LINE__);
+		//TFCHKGL(__FILE__, __LINE__);
 
 		TFLOG("aniso : %d", glewIsExtensionSupported("GL_EXT_texture_filter_anisotropic"));
 
@@ -141,8 +142,11 @@ public:
 
 		/////////////////////////////////// FRAMEBUFFER
 
-		TFTexture2D *tex_render = TFTexture2D::createEmpty(GL_RGBA, 1024, 768, GL_RGBA, GL_FLOAT);
+		//TFTexture2D *tex_render = TFTexture2D::createEmpty(GL_RGBA, 1024, 768, GL_RGBA, GL_FLOAT);
+		TFTexture2DMultisample *tex_render = TFTexture2DMultisample::createEmpty(2, GL_RGBA, 1024, 768, GL_TRUE);
 		tex_render->retain();
+		TFCHKGL(__FILE__, __LINE__);
+
 		TFTexture2D *tex_normal = TFTexture2D::createEmpty(GL_RGB, 1024, 768, GL_RGB, GL_FLOAT);
 		tex_normal->setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 		tex_normal->retain();
@@ -151,26 +155,31 @@ public:
 		tex_position->retain();
 		TFTexture2D *tex_visibility = TFTexture2D::createEmpty(GL_R32F, 1024, 768, GL_RED, GL_FLOAT);
 		tex_visibility->retain();
-		TFTexture2D *tex_depth = TFTexture2D::createEmpty(GL_DEPTH_COMPONENT, 1024, 768, GL_DEPTH_COMPONENT, GL_FLOAT);
-		tex_depth->setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		//TFTexture2D *tex_depth = TFTexture2D::createEmpty(GL_DEPTH_COMPONENT, 1024, 768, GL_DEPTH_COMPONENT, GL_FLOAT);
+		//tex_depth->setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+		//tex_depth->retain();
+		TFTexture2DMultisample *tex_depth = TFTexture2DMultisample::createEmpty(4, GL_DEPTH24_STENCIL8, 1024, 768, GL_FALSE);
 		tex_depth->retain();
-		TFRenderBuffer *renderbuffer_depth = TFRenderBuffer::create(GL_DEPTH_COMPONENT, 1024, 768);
+		//TFRenderBuffer *renderbuffer_depth = TFRenderBuffer::create(GL_DEPTH_COMPONENT, 1024, 768);
+		TFRenderBufferMultisample *renderbuffer_depth = TFRenderBufferMultisample::create(2, GL_DEPTH24_STENCIL8, 1024, 768);
 		renderbuffer_depth->retain();
+		TFCHKGL(__FILE__, __LINE__);
 
 		TFFrameBuffer *framebufferSSAO = TFFrameBuffer::create();
 		framebufferSSAO->retain();
 		framebufferSSAO->attachColor(tex_render);
-		framebufferSSAO->attachColor(tex_normal);
-		framebufferSSAO->attachColor(tex_position);
-		framebufferSSAO->attachColor(tex_visibility);
-		framebufferSSAO->attachDepth(tex_depth);
+		//framebufferSSAO->attachColor(tex_normal);
+		//framebufferSSAO->attachColor(tex_position);
+		//framebufferSSAO->attachColor(tex_visibility);
+		//framebufferSSAO->attachDepth(tex_depth);
 		//framebufferSSAO->attachDepthStencil(tex_depth);
 		//framebufferSSAO->attachDepth(renderbuffer_depth);
-		//framebufferSSAO->attachDepthStencil(renderbuffer_depth);
+		framebufferSSAO->attachDepthStencil(renderbuffer_depth);
 		framebufferSSAO->windup();
 
 		//TFTexture2D *tex_depth = TFTexture2D::createEmpty(GL_DEPTH_COMPONENT, 4096, 4096, GL_DEPTH_COMPONENT, GL_FLOAT);
 		//tex_depth->retain();
+		TFCHKGL(__FILE__, __LINE__);
 
 		TFFrameBuffer *framebuffer_shadowmap = TFFrameBuffer::create();
 		framebuffer_shadowmap->retain();
@@ -226,7 +235,7 @@ public:
 
 		TFCHKGL(__FILE__, __LINE__);
 
-		TFGizmo gizmo;
+		//TFGizmo gizmo;
 		TFFont font;
 		TFSphere *s = TFSphere::create(3);
 		s->retain();
@@ -241,6 +250,7 @@ public:
 		tex_paper->retain();
 		//glBindSampler(tex_paper->getID(), samplerID);
 		//std::deque<float> deltaTimes;
+
 		do{
 			//double currentTime = glfwGetTime();
 			//m_deltaTime = float(currentTime - m_lastTime);
@@ -254,14 +264,15 @@ public:
 			//}
 			//avg /= deltaTimes.size();
 
-			m_framerateTimer->start();
+			m_framerateTimer->elapse();
+			//m_framerateTimer->start();
 
 			control.computeMatricesFromInputs(m_framerateTimer->getDeltaTime());
 			depth_viewMatrix = glm::lookAt<float>(lightPosition + control.getPosition(), control.getPosition(), glm::vec3(0.0f, 1.0f, 0.0f));
 
-			framebuffer_shadowmap->bind();
-			glViewport(0, 0, 4096, 4096);
-			glClear(GL_DEPTH_BUFFER_BIT);
+			//framebuffer_shadowmap->bind();
+			//glViewport(0, 0, 4096, 4096);
+			//glClear(GL_DEPTH_BUFFER_BIT);
 
 			//shader = TFShaderManager::getInstance()->getShader("ShadowMap");
 			//glUseProgram(shader->getID());
@@ -297,12 +308,37 @@ public:
 			//}
 			//TFCHKGL(__FILE__, __LINE__, "Shadowmap error", true);
 
-			framebufferSSAO->bind();
+			glBindFramebuffer(GL_FRAMEBUFFER, framebufferSSAO->getID());
+			//framebufferSSAO->bind();
 			glViewport(0, 0, 1024, 768);
+			glClearColor(1, 1, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 			shader = TFShaderManager::getInstance()->getShader("DirectionalLight");
 			glUseProgram(shader->getID());
+			{
+				glm::vec3 _lightColor = lightColor * lightPower;
+				glUniformMatrix4fv(shader->getUniformLocation("M"), 1, GL_FALSE, &(model_portalgun.getMatrix()[0][0]));
+				glUniformMatrix4fv(shader->getUniformLocation("V"), 1, GL_FALSE, &(glm::mat4()[0][0]));
+				glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &(glm::mat4()[0][0]));
+				glUniform3f(shader->getUniformLocation("LightColor"), _lightColor.r, _lightColor.g, _lightColor.b);
+				glUniform3f(shader->getUniformLocation("LightDirection_worldspace"), lightPosition.x, lightPosition.y, lightPosition.z);
+
+				glEnable(GL_DEPTH_TEST);
+				glEnable(GL_CULL_FACE);
+				glCullFace(GL_FRONT);
+
+				glEnable(GL_STENCIL_TEST);
+				glStencilFunc(GL_ALWAYS, 1, 0xff);
+				glStencilMask(0xff);
+
+				model_portalgun.draw(uniforms);
+
+				glDisable(GL_CULL_FACE);
+				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_STENCIL_TEST);
+			}
 			{
 				glm::mat4 biasMatrix(
 					0.5, 0.0, 0.0, 0.0,
@@ -322,7 +358,12 @@ public:
 				glEnable(GL_CULL_FACE);
 				glCullFace(GL_BACK);
 
-				gizmo.drawLine(glm::vec3(1, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+
+				glEnable(GL_STENCIL_TEST);
+				glStencilFunc(GL_NOTEQUAL, 1, 0xff);
+				glStencilMask(0x00);
+
+				//gizmo.drawLine(glm::vec3(1, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 
 				//glActiveTexture(GL_TEXTURE1);
 				//tex_depth->bind();
@@ -334,130 +375,128 @@ public:
 
 				glDisable(GL_CULL_FACE);
 				glDisable(GL_DEPTH_TEST);
-			}
-			{
-				glm::vec3 _lightColor = lightColor * lightPower;
-				glUniformMatrix4fv(shader->getUniformLocation("M"), 1, GL_FALSE, &(model_portalgun.getMatrix()[0][0]));
-				glUniformMatrix4fv(shader->getUniformLocation("V"), 1, GL_FALSE, &(glm::mat4()[0][0]));
-				glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &(glm::mat4()[0][0]));
-				glUniform3f(shader->getUniformLocation("LightColor"), _lightColor.r, _lightColor.g, _lightColor.b);
-				glUniform3f(shader->getUniformLocation("LightDirection_worldspace"), lightPosition.x, lightPosition.y, lightPosition.z);
-
-				glEnable(GL_DEPTH_TEST);
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_FRONT);
-
-				model_portalgun.draw(uniforms);
-
-				glDisable(GL_CULL_FACE);
-				glDisable(GL_DEPTH_TEST);
+				glDisable(GL_STENCIL_TEST);
 			}
 			TFCHKGL(__FILE__, __LINE__);
 			
-			shader = TFShaderManager::getInstance()->getShader("Compute");
-			glUseProgram(shader->getID());
-			{
-				glUniform1f(shader->getUniformLocation("roll"), (float)m_framerateTimer->getDeltaTime());
+			//shader = TFShaderManager::getInstance()->getShader("Compute");
+			//glUseProgram(shader->getID());
+			//{
+			//	glUniform1f(shader->getUniformLocation("roll"), (float)m_framerateTimer->getDeltaTime());
 
-				glActiveTexture(GL_TEXTURE0);
-				//tex_depth->bind();
-				glBindImageTexture(0, tex_visibility->getID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
-				TFCHKGL(__FILE__, __LINE__);
-				glUniform1i(shader->getUniformLocation("destTex"), 0);
+			//	glActiveTexture(GL_TEXTURE0);
+			//	//tex_depth->bind();
+			//	glBindImageTexture(0, tex_visibility->getID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
+			//	TFCHKGL(__FILE__, __LINE__);
+			//	glUniform1i(shader->getUniformLocation("destTex"), 0);
 
-				glDispatchCompute(1024 / 16, 768 / 16, 1);
-			}
-			TFCHKGL(__FILE__, __LINE__);
+			//	glDispatchCompute(1024 / 16, 768 / 16, 1);
+			//}
+			//TFCHKGL(__FILE__, __LINE__);
 
-			shader = TFShaderManager::getInstance()->getShader("SingleColor");
-			glUseProgram(shader->getID());
-			{
-				glUniformMatrix4fv(shader->getUniformLocation("M"), 1, GL_FALSE, &(s->getMatrix()[0][0]));
-				glUniformMatrix4fv(shader->getUniformLocation("V"), 1, GL_FALSE, &(control.getViewMatirix()[0][0]));
-				glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &(control.getProjectionMatrix()[0][0]));
-				glUniform3f(shader->getUniformLocation("Color"), 0.5, 0.5, 0.5);
+			//shader = TFShaderManager::getInstance()->getShader("SingleColor");
+			//glUseProgram(shader->getID());
+			//{
+			//	glUniformMatrix4fv(shader->getUniformLocation("M"), 1, GL_FALSE, &(s->getMatrix()[0][0]));
+			//	glUniformMatrix4fv(shader->getUniformLocation("V"), 1, GL_FALSE, &(control.getViewMatirix()[0][0]));
+			//	glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &(control.getProjectionMatrix()[0][0]));
+			//	glUniform3f(shader->getUniformLocation("Color"), 0.5, 0.5, 0.5);
 
-				glEnableVertexAttribArray(0);
-				s->vertexBuffer->bind();
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+			//	glEnableVertexAttribArray(0);
+			//	s->vertexBuffer->bind();
+			//	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-				glEnableVertexAttribArray(2);
-				s->normalBuffer->bind();
-				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+			//	glEnableVertexAttribArray(2);
+			//	s->normalBuffer->bind();
+			//	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-				s->elementBuffer->bind();
+			//	s->elementBuffer->bind();
 
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_BACK);
-				glEnable(GL_DEPTH_TEST);
+			//	glEnable(GL_CULL_FACE);
+			//	glCullFace(GL_BACK);
+			//	glEnable(GL_DEPTH_TEST);
 
-				glDrawElements(GL_TRIANGLES, s->m_faces.size() * 3, GL_UNSIGNED_INT, (void *)0);
+			//	glDrawElements(GL_TRIANGLES, s->m_faces.size() * 3, GL_UNSIGNED_INT, (void *)0);
 
-				glDepthFunc(GL_ALWAYS);
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glUniform3f(shader->getUniformLocation("Color"), 0.0, 0.0, 0.0);
-				glDrawElements(GL_TRIANGLES, s->m_faces.size() * 3, GL_UNSIGNED_INT, (void *)0);
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				glDepthFunc(GL_LESS);
-				
-				glDisable(GL_DEPTH_TEST);
-				glDisable(GL_CULL_FACE);
-			}
+			//	glDepthFunc(GL_ALWAYS);
+			//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			//	glUniform3f(shader->getUniformLocation("Color"), 0.0, 0.0, 0.0);
+			//	glDrawElements(GL_TRIANGLES, s->m_faces.size() * 3, GL_UNSIGNED_INT, (void *)0);
+			//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			//	glDepthFunc(GL_LESS);
+			//	
+			//	glDisable(GL_DEPTH_TEST);
+			//	glDisable(GL_CULL_FACE);
+			//}
 
-			shader = TFShaderManager::getInstance()->getShader("Gizmo");
-			glUseProgram(shader->getID());
-			{
-				glUniformMatrix4fv(shader->getUniformLocation("MVP"), 1, GL_FALSE, &((control.getProjectionMatrix() * control.getViewMatirix())[0][0]));
+			//shader = TFShaderManager::getInstance()->getShader("Gizmo");
+			//glUseProgram(shader->getID());
+			//{
+			//	glUniformMatrix4fv(shader->getUniformLocation("MVP"), 1, GL_FALSE, &((control.getProjectionMatrix() * control.getViewMatirix())[0][0]));
 
-				gizmo.flush();
-			}
+			//	gizmo.flush();
+			//}
+			//TFCHKGL(__FILE__, __LINE__, "", true);
 
 			// FrameBuffer
-			TFFrameBuffer::bindDefault();
-			glViewport(0, 0, 1024, 768);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//TFFrameBuffer::bindDefault();
+			//glViewport(0, 0, 1024, 768);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			shader = TFShaderManager::getInstance()->getShader("SSAO");
-			glUseProgram(shader->getID());
-			{
-				//glUniform1i(shader->getUniformLocation("DepthTexture"), 0);
-				glActiveTexture(GL_TEXTURE0);
-				tex_depth->bind();
-
-				//glUniform1i(shader->getUniformLocation("NormalTexture"), 1);
-				glActiveTexture(GL_TEXTURE1);
-				tex_normal->bind();
+			//framebufferSSAO->bind();
+			//framebufferSSAO->blitToDefault();
 
 
-				//glBindSampler(2, samplerID);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferSSAO->getID());
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			glBlitFramebuffer(0, 0, 1024, 768, 0, 0, 1024, 768, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-				//glUniform1i(shader->getUniformLocation("RenderedTexture"), 2);
-				glActiveTexture(GL_TEXTURE2);
-				tex_render->bind();
+			//shader = TFShaderManager::getInstance()->getShader("SSAO");
+			//glUseProgram(shader->getID());
+			//{
+			//	//glUniform1i(shader->getUniformLocation("DepthTexture"), 0);
+			//	//glActiveTexture(GL_TEXTURE0);
+			//	//tex_depth->bind();
 
-				//glUniform1i(shader->getUniformLocation("PositionTexture"), 3);
-				glActiveTexture(GL_TEXTURE3);
-				tex_position->bind();
+			//	//glUniform1i(shader->getUniformLocation("NormalTexture"), 1);
+			//	//glActiveTexture(GL_TEXTURE1);
+			//	//tex_normal->bind();
 
-				//glUniform1i(shader->getUniformLocation("PaperTexture"), 4);
-				glActiveTexture(GL_TEXTURE4);
-				tex_paper->bind();
 
-				glUniform3f(shader->getUniformLocation("LightColor"), lightColor.x, lightColor.y, lightColor.z);
-				glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &control.getProjectionMatrix()[0][0]);
-				glUniform1f(shader->getUniformLocation("edge0"), edge0);
-				glUniform1f(shader->getUniformLocation("edge1"), edge1);
+			//	//glBindSampler(2, samplerID);
 
-				glEnableVertexAttribArray(0);
-				TFFramework::vertexBuffer_quad->bind();
-				glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+			//	//glUniform1i(shader->getUniformLocation("RenderedTexture"), 2);
+			//	glActiveTexture(GL_TEXTURE2);
+			//	tex_render->bind();
+			//	TFCHKGL(__FILE__, __LINE__, "", true);
 
-				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			//	//glUniform1i(shader->getUniformLocation("PositionTexture"), 3);
+			//	//glActiveTexture(GL_TEXTURE3);
+			//	//tex_position->bind();
 
-				glDisableVertexAttribArray(0);
-			}
-			TFCHKGL(__FILE__, __LINE__, "", true);
-			glBindSampler(2, 0);
+			//	//glUniform1i(shader->getUniformLocation("PaperTexture"), 4);
+			//	//glActiveTexture(GL_TEXTURE4);
+			//	//tex_paper->bind();
+
+			//	glUniform3f(shader->getUniformLocation("LightColor"), lightColor.x, lightColor.y, lightColor.z);
+			//	glUniformMatrix4fv(shader->getUniformLocation("P"), 1, GL_FALSE, &control.getProjectionMatrix()[0][0]);
+			//	glUniform1f(shader->getUniformLocation("edge0"), edge0);
+			//	glUniform1f(shader->getUniformLocation("edge1"), edge1);
+			//	TFCHKGL(__FILE__, __LINE__, "", true);
+
+			//	glEnableVertexAttribArray(0);
+			//	TFFramework::vertexBuffer_quad->bind();
+			//	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+			//	TFCHKGL(__FILE__, __LINE__, "", true);
+
+			//	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			//	TFCHKGL(__FILE__, __LINE__, "", true);
+
+			//	glDisableVertexAttribArray(0);
+			//}
+			//TFCHKGL(__FILE__, __LINE__, "", true);
+			//glBindSampler(2, 0);
 
 			//shader = TFShaderManager::getInstance()->getShader("Screen");
 			//glUseProgram(shader->getID());
@@ -481,20 +520,22 @@ public:
 			//	glDisableVertexAttribArray(0);
 			//}
 
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			font.setStyle(TF_FONT_STYLE_BOLD);
 			font.setColor(0.0f, 0.0f, 0.0f, 1.0f);
 			font.drawText(0, 0, "FPS : %.1lf", m_framerateTimer->getFPS());
+			font.drawText(0, 15, "Depta time : %lf", m_framerateTimer->getDeltaTime());
 			
 			font.setStyle(TF_FONT_STYLE_REGULAR);
 			font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 			font.drawText(0, 0, "FPS : %.1lf", m_framerateTimer->getFPS());
+			font.drawText(0, 15, "Depta time : %lf", m_framerateTimer->getDeltaTime());
+
+
+			TFAutoreleasePool::getInstance()->clean();
 
 			glfwSwapBuffers(m_window);
 			glfwPollEvents();
-
-			TFAutoreleasePool::getInstance()->clean();
-			//m_lastTime = currentTime;
-			m_framerateTimer->stop();
 		} while (glfwGetKey(m_window, GLFW_KEY_ESCAPE) != GLFW_PRESS
 			&& glfwWindowShouldClose(m_window) == 0);
 

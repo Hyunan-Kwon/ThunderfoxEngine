@@ -99,12 +99,12 @@ void main(){
 		+ diffuseIntensity * MaterialDiffuseColor * vec4(LightColor, 1.0)
 		+ specularIntensity * MaterialSpecularColor * vec4(LightColor, 1.0);
 
-	Normal = (N + 1.0) * 0.5;
+	//Normal = (N + 1.0) * 0.5;
 	//Position = VertexIn.Position_cameraspace.xyz;
 
 	//midpoint = P *vec4(midpoint, 1.0);
 	//Position = vec3(midpoint.xy, 0.0);
-	Position = midpoint.xy;
+	//Position = midpoint.xy;
 	//Position = vec2((gl_FragCoord.x - 0.5) / 1024.0, (gl_FragCoord.y - 0.5) / 768.0);
 	//FragColor = vec4(midpoint.xy, 0.0, 1.0);
 } 
