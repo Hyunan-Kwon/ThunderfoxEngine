@@ -1,6 +1,7 @@
 #version 430
 
 uniform float roll;
+uniform int R;
 //uniform writeonly image2D destTex;
 
 layout(local_size_x = 16, local_size_y = 16) in;
@@ -16,12 +17,16 @@ void main() {
 	//vec4 texel = imageLoad(destTex, storePos);
 	////imageStore(destTex, storePos, vec4(1.0 - globalCoef * localCoef, 0.0, 0.0, 0.0));
 	//imageStore(destTex, storePos, vec4(0.0));
+	int radius = 3;
+
+	for(int i=0; i<R; ++i){
+	 radius += R;
+	}
 
 	ivec2 texCoord = ivec2(gl_GlobalInvocationID.xy);
 
 	
 	vec4 sum = vec4(0.0);
-	int radius = 3;
 	for(int x = -radius; x <= radius; ++x){
 		for(int y = -radius; y <= radius; ++y){
 			ivec2 sampleCoord = texCoord + ivec2(x, y);

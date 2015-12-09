@@ -20,39 +20,21 @@ protected:
 	}
 public:
 	static TFShaderUnit* createWithString(GLenum type, const char *code){
-		std::string strType;
-		switch (type)
-		{
-		case GL_VERTEX_SHADER:
-			strType = "vertex";
-			break;
-		case GL_FRAGMENT_SHADER:
-			strType = "fragment";
-			break;
-		case GL_GEOMETRY_SHADER:
-			strType = "geometry";
-			break;
-		case GL_COMPUTE_SHADER:
-			strType = "compute";
-			break;
-		default:
-			TFLOG("Compiling shader failure. Unsupported shader type.");
-			return nullptr;
-		}
-		TFLOG("Compiling %s shader with string...", strType.c_str());
-
+		TFLOG("Compiling %s shader with string...", getShaderTypeString(type));
 		return static_cast<TFShaderUnit *>((new TFShaderUnit(type, code))->autorelease());
 	}
 
 	static TFShaderUnit* createWithFile(GLenum type, const char *filename){
 		// Read the shader code from the file.
-		std::string code;
-		std::ifstream stream(filename, std::ios::in);
+		std::vector<char> code;
+		std::ifstream stream(filename, std::ios::binary | std::ios::ate);
 		if (stream.is_open()){
-			std::string line = "";
-			while (std::getline(stream, line)){
-				code += "\n" + line;
-			}
+			unsigned int fileSize = stream.tellg();
+			stream.close();
+			stream.clear();
+			stream.open(filename, std::ios::binary);
+			code.resize(fileSize + 1);
+			stream.read(code.data(), fileSize);
 			stream.close();
 		}
 		else{
@@ -60,38 +42,33 @@ public:
 			TFEXIT();
 		}
 
-		std::string strType;
-		switch (type)
-		{
-		case GL_VERTEX_SHADER:
-			strType = "vertex";
-			break;
-		case GL_FRAGMENT_SHADER:
-			strType = "fragment";
-			break;
-		case GL_GEOMETRY_SHADER:
-			strType = "geometry";
-			break;
-		case GL_COMPUTE_SHADER:
-			strType = "compute";
-			break;
-		default:
-			TFEXIT("Compiling shader failure. Unsupported shader type.");
-		}
-
-		// Compile vertex shader.
-		TFLOG("Compiling %s shader with \"%s\"...", strType.c_str(), filename);
-
-		return static_cast<TFShaderUnit *>((new TFShaderUnit(type, code.c_str()))->autorelease());
+		TFLOG("Compiling %s shader with \"%s\"...", getShaderTypeString(type), filename);
+		return static_cast<TFShaderUnit *>((new TFShaderUnit(type, code.data()))->autorelease());
 	}
 
 	virtual ~TFShaderUnit(){
 		glDeleteShader(m_id);
 	}
+
+	static const char * getShaderTypeString(GLenum type)
+	{
+		switch (type)
+		{
+		case GL_VERTEX_SHADER:			return "vertex";
+		case GL_FRAGMENT_SHADER:		return "fragment";
+		case GL_GEOMETRY_SHADER:		return "geometry";
+		case GL_COMPUTE_SHADER:			return "compute";
+		default:
+			TFEXIT("Compiling shader failure. Unsupportable shader type.");
+			return "";
+		}
+	}
 };
 
 class TFShader : public TFRef, public TFGLObject{
 protected:
+	std::map<std::string, GLint> m_uniformIDs;
+
 	TFShader(const std::vector<TFShaderUnit *> &shaderUnits){
 		// Link the program.
 		TFLOG("Linking program...");
@@ -110,8 +87,7 @@ protected:
 		if (result == GL_FALSE){
 			std::vector<char> errorMessage(infoLogLength);
 			glGetProgramInfoLog(m_id, infoLogLength, nullptr, &errorMessage[0]);
-			TFLOG(&errorMessage[0]);
-			TFEXIT("Compiling shader program.");
+			TFEXIT(&errorMessage[0]);
 		}
 	}
 public:
@@ -133,8 +109,22 @@ public:
 		glDeleteProgram(m_id);
 	}
 
+	//@ Get uniform ID using glUniformLocation().
 	GLint getUniformLocation(const char *uniformLocation) const{
 		return glGetUniformLocation(m_id, uniformLocation);
+	}
+
+	//@ Save and map uniform ID
+	void setUniformLocation(const char *uniformLcoation){
+		m_uniformIDs[uniformLcoation] = glGetUniformLocation(m_id, uniformLcoation);
+	}
+
+	//@ Get mapped uniform ID.
+	GLint getUniformID(const char *uniformLocation) const{
+		//return m_uniformIDs[uniformLocation];
+		auto &res = m_uniformIDs.find(uniformLocation);
+		TFASSERT(res != m_uniformIDs.end(), "Getting uniform ID failed.");
+		return res->second;
 	}
 };
 

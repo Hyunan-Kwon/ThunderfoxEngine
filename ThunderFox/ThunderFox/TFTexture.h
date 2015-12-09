@@ -5,7 +5,6 @@
 #include "FreeImage\FreeImage.h"
 #include "TFHandle.h"
 #include "TFObject.h"
-#include <cassert>
 #include <vector>
 
 struct TFImageData : public TFRef{
@@ -90,10 +89,56 @@ struct TFImageData : public TFRef{
 		FreeImage_Unload(dib);
 	}
 
+	// This is for reading raw file.
+	TFImageData(const char *filename, int width, int height, int bytePerPixel)
+	: width(width), height(height)
+	{		switch (bytePerPixel)
+		{
+			case 1:		internalFormat = format = GL_RED;		break;
+			case 3:		internalFormat = format = GL_RGB;		break;
+			case 4:		internalFormat = format = GL_RGBA;		break;
+			default:
+				TFLOG("Can't accept this raw image type: %d byte per pixel.", bytePerPixel);
+				TFEXIT();
+		}
+		std::ifstream stream(filename, std::ios::binary);
+		if (!stream.is_open()){
+			TFLOG("Can't open \"%s\".", filename);			TFEXIT();
+		}
+		data = new GLubyte[width * height * bytePerPixel];
+		stream.read(reinterpret_cast<char *>(data), sizeof(GLubyte) * width * height * bytePerPixel);	}
+
 	virtual ~TFImageData() { delete[] data; }
 
 	static TFImageData* create(const char *filename) {
 		return static_cast<TFImageData *>((new TFImageData(filename))->autorelease());
+	}
+
+	static TFImageData* createWithRawFile(const char *filename, int width, int height, int bytePerPixel){
+		return static_cast<TFImageData *>((new TFImageData(filename, width, height, bytePerPixel))->autorelease());
+	}
+
+	TFImageData* flipVertical(){
+		int bytePerPixel;
+		switch (internalFormat)
+		{
+			case GL_RED:	bytePerPixel = 1;	break;
+			case GL_RGB:	bytePerPixel = 3;	break;
+			case GL_RGBA:	bytePerPixel = 4;	break;
+			default:	TFEXIT("Can't flip the image data vertically. Unsupportable internal format.");
+		}
+
+		std::vector<GLubyte> line(width * bytePerPixel);
+		int lineLength = bytePerPixel * width;
+		for (int y = 0; y < (height >> 1); ++y){
+			GLubyte *upper = data + y * lineLength;
+			GLubyte *lower = data + (height - 1 - y) * lineLength;
+			memcpy(line.data(), upper, lineLength);
+			memcpy(upper, lower, lineLength);
+			memcpy(lower, line.data(), lineLength);
+		}
+
+		return this;
 	}
 };
 
@@ -255,12 +300,12 @@ public:
 										TFImageData *front, TFImageData *back)
 	{
 		std::vector<TFImageData *> imageDataSet;
-		imageDataSet.push_back(right);
-		imageDataSet.push_back(left);
-		imageDataSet.push_back(top);
-		imageDataSet.push_back(bottom);
-		imageDataSet.push_back(front);
-		imageDataSet.push_back(back);
+		imageDataSet.push_back(right->flipVertical());
+		imageDataSet.push_back(left->flipVertical());
+		imageDataSet.push_back(top->flipVertical());
+		imageDataSet.push_back(bottom->flipVertical());
+		imageDataSet.push_back(front->flipVertical());
+		imageDataSet.push_back(back->flipVertical());
 		return static_cast<TFTextureCubemap *>((new TFTextureCubemap(imageDataSet))->autorelease());
 	}
 
@@ -269,12 +314,12 @@ public:
 												const char *front, const char *back)
 	{
 		std::vector<TFImageData *> imageDataSet;
-		imageDataSet.push_back(new TFImageData(right));
-		imageDataSet.push_back(new TFImageData(left));
-		imageDataSet.push_back(new TFImageData(top));
-		imageDataSet.push_back(new TFImageData(bottom));
-		imageDataSet.push_back(new TFImageData(front));
-		imageDataSet.push_back(new TFImageData(back));
+		imageDataSet.push_back((new TFImageData(right))->flipVertical());
+		imageDataSet.push_back((new TFImageData(left))->flipVertical());
+		imageDataSet.push_back((new TFImageData(top))->flipVertical());
+		imageDataSet.push_back((new TFImageData(bottom))->flipVertical());
+		imageDataSet.push_back((new TFImageData(front))->flipVertical());
+		imageDataSet.push_back((new TFImageData(back))->flipVertical());
 		TFTextureCubemap *instance = new TFTextureCubemap(imageDataSet);
 		instance->autorelease();
 		for (auto &imageData : imageDataSet){

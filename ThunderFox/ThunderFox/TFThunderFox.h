@@ -54,7 +54,7 @@ private:
 	TFThunderFox(TFThunderFox const&);
 	TFThunderFox operator = (TFThunderFox const&);
 
-
+	int WTF;
 
 public:
 	TFThunderFox()
@@ -106,6 +106,7 @@ public:
 		m_framerateTimer->retain();
 		//m_framerateTimer->start();
 
+		WTF = 10;
 	}
 
 	~TFThunderFox(){
@@ -143,7 +144,7 @@ public:
 		/////////////////////////////////// FRAMEBUFFER
 
 		//TFTexture2D *tex_render = TFTexture2D::createEmpty(GL_RGBA, 1024, 768, GL_RGBA, GL_FLOAT);
-		TFTexture2DMultisample *tex_render = TFTexture2DMultisample::createEmpty(2, GL_RGBA, 1024, 768, GL_TRUE);
+		TFTexture2DMultisample *tex_render = TFTexture2DMultisample::createEmpty(4, GL_RGBA, 1024, 768, GL_TRUE);
 		tex_render->retain();
 		TFCHKGL(__FILE__, __LINE__);
 
@@ -161,7 +162,7 @@ public:
 		TFTexture2DMultisample *tex_depth = TFTexture2DMultisample::createEmpty(4, GL_DEPTH24_STENCIL8, 1024, 768, GL_FALSE);
 		tex_depth->retain();
 		//TFRenderBuffer *renderbuffer_depth = TFRenderBuffer::create(GL_DEPTH_COMPONENT, 1024, 768);
-		TFRenderBufferMultisample *renderbuffer_depth = TFRenderBufferMultisample::create(2, GL_DEPTH24_STENCIL8, 1024, 768);
+		TFRenderBufferMultisample *renderbuffer_depth = TFRenderBufferMultisample::create(4, GL_DEPTH24_STENCIL8, 1024, 768);
 		renderbuffer_depth->retain();
 		TFCHKGL(__FILE__, __LINE__);
 
@@ -383,6 +384,7 @@ public:
 			//glUseProgram(shader->getID());
 			//{
 			//	glUniform1f(shader->getUniformLocation("roll"), (float)m_framerateTimer->getDeltaTime());
+			//	glUniform1i(shader->getUniformLocation("R"), WTF);
 
 			//	glActiveTexture(GL_TEXTURE0);
 			//	//tex_depth->bind();
@@ -525,11 +527,13 @@ public:
 			font.setColor(0.0f, 0.0f, 0.0f, 1.0f);
 			font.drawText(0, 0, "FPS : %.1lf", m_framerateTimer->getFPS());
 			font.drawText(0, 15, "Depta time : %lf", m_framerateTimer->getDeltaTime());
-			
+			font.drawText(0, 30, "ms per frame : %.1lfms", m_framerateTimer->getMPF());
+
 			font.setStyle(TF_FONT_STYLE_REGULAR);
 			font.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 			font.drawText(0, 0, "FPS : %.1lf", m_framerateTimer->getFPS());
 			font.drawText(0, 15, "Depta time : %lf", m_framerateTimer->getDeltaTime());
+			font.drawText(0, 30, "ms per frame : %.1lfms", m_framerateTimer->getMPF());
 
 
 			TFAutoreleasePool::getInstance()->clean();

@@ -62,13 +62,20 @@ public:
 		setStyle(TF_FONT_STYLE_BOLD);
 
 		m_shader = TFShader::create(TFShaderUnit::createWithString(GL_VERTEX_SHADER, vertexShaderCode), TFShaderUnit::createWithString(GL_FRAGMENT_SHADER, fragmentShaderCode));
-		m_shader->getUniformLocation("Tex_font");
-		m_shader->getUniformLocation("Color");
-		m_shader->getUniformLocation("StyleMask");
-		m_shader->getUniformLocation("Position");
-		m_shader->getUniformLocation("Char");
-		m_shader->getUniformLocation("BaseCharSize");
-		m_shader->getUniformLocation("CharSize");
+		//m_shader->getUniformLocation("Tex_font");
+		//m_shader->getUniformLocation("Color");
+		//m_shader->getUniformLocation("StyleMask");
+		//m_shader->getUniformLocation("Position");
+		//m_shader->getUniformLocation("Char");
+		//m_shader->getUniformLocation("BaseCharSize");
+		//m_shader->getUniformLocation("CharSize");
+		m_shader->setUniformLocation("Tex_font");
+		m_shader->setUniformLocation("Color");
+		m_shader->setUniformLocation("StyleMask");
+		m_shader->setUniformLocation("Position");
+		m_shader->setUniformLocation("Char");
+		m_shader->setUniformLocation("BaseCharSize");
+		m_shader->setUniformLocation("CharSize");
 		m_shader->retain();
 
 		m_texture = TFTexture2D::createWithFile("Resources/Images/default16.png");
@@ -93,14 +100,14 @@ public:
 		{
 			glActiveTexture(GL_TEXTURE0);
 			m_texture->bind();
-			glUniform1i(m_shader->getUniformLocation("Tex_font"), 0);
+			glUniform1i(m_shader->getUniformID("Tex_font"), 0);
 
-			glUniform4f(m_shader->getUniformLocation("Color"), m_color.r, m_color.g, m_color.b, m_color.a);
-			glUniform4f(m_shader->getUniformLocation("StyleMask"), m_styleMask.x, m_styleMask.y, m_styleMask.z, m_styleMask.w);
-			glUniform2f(m_shader->getUniformLocation("Position"), x, y);
-			glUniform1i(m_shader->getUniformLocation("Char"), static_cast<int>(c));
-			glUniform2i(m_shader->getUniformLocation("BaseCharSize"), m_baseCharSize.x, m_baseCharSize.y);
-			glUniform2f(m_shader->getUniformLocation("CharSize"), charSize.x, charSize.y);
+			glUniform4f(m_shader->getUniformID("Color"), m_color.r, m_color.g, m_color.b, m_color.a);
+			glUniform4f(m_shader->getUniformID("StyleMask"), m_styleMask.x, m_styleMask.y, m_styleMask.z, m_styleMask.w);
+			glUniform2f(m_shader->getUniformID("Position"), x, y);
+			glUniform1i(m_shader->getUniformID("Char"), static_cast<int>(c));
+			glUniform2i(m_shader->getUniformID("BaseCharSize"), m_baseCharSize.x, m_baseCharSize.y);
+			glUniform2f(m_shader->getUniformID("CharSize"), charSize.x, charSize.y);
 
 			glEnableVertexAttribArray(0);
 			TFFramework::vertexBuffer_quad->bind();
