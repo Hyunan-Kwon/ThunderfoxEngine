@@ -30,4 +30,5 @@ void main(){
 	float specularIntensity = clamp(pow(dot(E, R), material_shininess), 0.0, 1.0);
 
 	FragColor = vec4(diffuseIntensity * material_diffuse + specularIntensity * vec3(1, 1, 1), 1.0);
+	//FragColor = vec4(albedo.rgb, 1.0);
 }

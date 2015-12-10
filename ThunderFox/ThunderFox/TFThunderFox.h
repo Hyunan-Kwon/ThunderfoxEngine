@@ -225,11 +225,11 @@ public:
 		//model.translate(1, 0, 0);
 
 		std::vector<GLuint> uniforms;
-		TFShader *shader = TFShaderManager::getInstance()->getShader("DirectionalLight");
-		uniforms.push_back(shader->getUniformLocation("MaterialAmbient"));
-		uniforms.push_back(shader->getUniformLocation("MaterialDiffuse"));
-		uniforms.push_back(shader->getUniformLocation("MaterialSpecular"));
-		uniforms.push_back(shader->getUniformLocation("MaterialShininess"));
+		//TFShader *shader = TFShaderManager::getInstance()->getShader("DirectionalLight");
+		//uniforms.push_back(shader->getUniformLocation("MaterialAmbient"));
+		//uniforms.push_back(shader->getUniformLocation("MaterialDiffuse"));
+		//uniforms.push_back(shader->getUniformLocation("MaterialSpecular"));
+		//uniforms.push_back(shader->getUniformLocation("MaterialShininess"));
 
 		glm::vec3 lightPosition(1.0f, 3.0f, 1.0f);
 		glm::vec3 lightColor(1.0, 244.0 / 255.0, 229.0 / 255.0);
@@ -277,6 +277,10 @@ public:
 		shader_gbuffer->setUniformLocation("M");
 		shader_gbuffer->setUniformLocation("PV");
 		shader_gbuffer->setUniformLocation("M_normal");
+		uniforms.push_back(shader_gbuffer->getUniformLocation("MaterialAmbient"));
+		uniforms.push_back(shader_gbuffer->getUniformLocation("MaterialDiffuse"));
+		uniforms.push_back(shader_gbuffer->getUniformLocation("MaterialSpecular"));
+		uniforms.push_back(shader_gbuffer->getUniformLocation("MaterialShininess"));
 		shader_gbuffer->retain();
 
 		TFShader *shader_gbuffer_test = TFShader::createWithFile("shaders/Screen.vert", "shaders/DeferredTest.fs.glsl");
@@ -305,6 +309,10 @@ public:
 
 			framebuffer_gbuffer->bind();
 			{
+				GLfloat clearcolor[] = { 1, 1, 1, 1 };
+				glClearBufferfv(GL_COLOR, 1, clearcolor);
+				glClearDepth(1.0);
+				glClear(GL_DEPTH_BUFFER_BIT);
 				shader_gbuffer->bind();
 				{
 					glUniformMatrix4fv(shader_gbuffer->getUniformID("M"), 1, GL_FALSE, &model.getMatrix()[0][0]);
@@ -320,6 +328,8 @@ public:
 
 			TFFrameBuffer::bindDefault();
 			{
+				glClearColor(1, 1, 1, 1);
+				glClear(GL_COLOR_BUFFER_BIT);
 				shader_gbuffer_test->bind();
 				{
 					glActiveTexture(GL_TEXTURE0);
