@@ -17,6 +17,24 @@ enum {
 	MAX_GIZMO_POINTS = 100,
 };
 
+//class TFGizmo{
+//private:
+//	TFGizmo(TFGizmo const&);
+//	void operator = (TFGizmo const&);
+//
+//	static std::vector<TFGizmo *> m_instances;
+//protected:
+//	TFGizmo(){
+//		m_instances.push_back(this);
+//	}
+//
+//	virtual void drawGizmo() = 0;
+//public:
+//	static void draw(){
+//
+//	}
+//};
+
 class TFGizmo{
 private:
 	GLuint m_vertexBuffer;

@@ -6,6 +6,7 @@
 #include "TFHandle.h"
 #include "TFObject.h"
 #include <vector>
+#include <fstream>
 
 struct TFImageData : public TFRef{
 	unsigned int width, height;
@@ -92,7 +93,8 @@ struct TFImageData : public TFRef{
 	// This is for reading raw file.
 	TFImageData(const char *filename, int width, int height, int bytePerPixel)
 	: width(width), height(height)
-	{		switch (bytePerPixel)
+	{
+		switch (bytePerPixel)
 		{
 			case 1:		internalFormat = format = GL_RED;		break;
 			case 3:		internalFormat = format = GL_RGB;		break;
@@ -100,13 +102,17 @@ struct TFImageData : public TFRef{
 			default:
 				TFLOG("Can't accept this raw image type: %d byte per pixel.", bytePerPixel);
 				TFEXIT();
-		}
+		}
+
 		std::ifstream stream(filename, std::ios::binary);
 		if (!stream.is_open()){
-			TFLOG("Can't open \"%s\".", filename);			TFEXIT();
-		}
+			TFLOG("Can't open \"%s\".", filename);
+			TFEXIT();
+		}
+
 		data = new GLubyte[width * height * bytePerPixel];
-		stream.read(reinterpret_cast<char *>(data), sizeof(GLubyte) * width * height * bytePerPixel);	}
+		stream.read(reinterpret_cast<char *>(data), sizeof(GLubyte) * width * height * bytePerPixel);
+	}
 
 	virtual ~TFImageData() { delete[] data; }
 

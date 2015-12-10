@@ -6,6 +6,7 @@
 #include "TFCommon.h"
 
 class ResourceManager{
+private:
 	ResourceManager(ResourceManager const&);
 	void operator = (ResourceManager const&);
 protected:
@@ -112,7 +113,7 @@ public:
 		shader->getUniformLocation("MVP");
 		this->enroll("ShadowMap", shader);
 		
-		shader = TFShader::create(TFShaderUnit::createWithFile(GL_COMPUTE_SHADER, "Shaders/BilateralFilter.vert"));
+		shader = TFShader::create(TFShaderUnit::createWithFile(GL_COMPUTE_SHADER, "Shaders/BilateralFilter.cs.glsl"));
 		shader->getUniformLocation("roll");
 		shader->getUniformLocation("destTex");
 		this->enroll("Compute", shader);

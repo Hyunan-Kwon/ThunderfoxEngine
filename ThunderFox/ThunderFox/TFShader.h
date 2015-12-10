@@ -87,7 +87,8 @@ protected:
 		if (result == GL_FALSE){
 			std::vector<char> errorMessage(infoLogLength);
 			glGetProgramInfoLog(m_id, infoLogLength, nullptr, &errorMessage[0]);
-			TFEXIT(&errorMessage[0]);
+			TFLOG(&errorMessage[0]);
+			TFEXIT("Compling shader failed.");
 		}
 	}
 public:
@@ -105,8 +106,25 @@ public:
 		return static_cast<TFShader *>((new TFShader(std::vector<TFShaderUnit *>(1, shaderUnit)))->autorelease());
 	}
 
+	static TFShader* createWithFile(const char *vertex_shader_filename, const char *fragment_shader_filename, const char *geometry_shader_filename = nullptr){
+		std::vector<TFShaderUnit *> shaderUnits;
+		shaderUnits.push_back(TFShaderUnit::createWithFile(GL_VERTEX_SHADER, vertex_shader_filename));
+		shaderUnits.push_back(TFShaderUnit::createWithFile(GL_FRAGMENT_SHADER, fragment_shader_filename));
+		if (geometry_shader_filename != nullptr){
+			shaderUnits.push_back(TFShaderUnit::createWithFile(GL_GEOMETRY_SHADER, geometry_shader_filename));
+		}
+		return static_cast<TFShader *>((new TFShader(shaderUnits))->autorelease());
+	}
+
 	virtual ~TFShader(){
 		glDeleteProgram(m_id);
+	}
+
+	void bind() const{
+		glUseProgram(m_id);
+	}
+	void bindDefault() const{
+		glUseProgram(0);
 	}
 
 	//@ Get uniform ID using glUniformLocation().

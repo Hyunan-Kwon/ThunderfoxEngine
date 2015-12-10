@@ -166,10 +166,19 @@
     <None Include="Shaders\TextureOnly.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\BilateralFilter.vert">
+    <None Include="Shaders\Midpoint.geom">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\Midpoint.geom">
+    <None Include="Shaders\BilateralFilter.cs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Gbuffer.fs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GBuffer.vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\DeferredTest.fs.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

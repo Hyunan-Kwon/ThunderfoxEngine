@@ -99,9 +99,12 @@
     <ClInclude Include="TFBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\BilateralFilter.vert" />
+    <None Include="Shaders\BilateralFilter.cs.glsl" />
+    <None Include="Shaders\DeferredTest.fs.glsl" />
     <None Include="Shaders\DirectionalLight.frag" />
     <None Include="Shaders\DirectionalLight.vert" />
+    <None Include="Shaders\Gbuffer.fs.glsl" />
+    <None Include="Shaders\GBuffer.vs.glsl" />
     <None Include="Shaders\Gizmo.frag" />
     <None Include="Shaders\Gizmo.vert" />
     <None Include="Shaders\HorizontalDuplication.geom" />

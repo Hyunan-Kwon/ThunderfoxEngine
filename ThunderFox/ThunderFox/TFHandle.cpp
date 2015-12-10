@@ -19,7 +19,8 @@ std::vector<TFLogMessage> TFHandle::m_logMessages;
 void TFHandle::log(const char *message, ...){
 	va_list args;
 	va_start(args, message);
-	char buff[1024];
+	//char buff[1024];
+	char buff[8192];
 	vsprintf_s(buff, message, args);
 	va_end(args);
 
