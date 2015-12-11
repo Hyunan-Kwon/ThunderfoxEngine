@@ -255,11 +255,11 @@ public:
 		//std::deque<float> deltaTimes;
 
 
-		TFTexture2D *tex_gbuffer_position = TFTexture2D::createEmpty(GL_RGB16F, 1024, 768, GL_RGB, GL_FLOAT);
+		TFTexture2D *tex_gbuffer_position = TFTexture2D::createEmpty(GL_RGB32F, 1024, 768, GL_RGB, GL_FLOAT);
 		tex_gbuffer_position->retain();
 		TFTexture2D *tex_gbuffer_albedo = TFTexture2D::createEmpty(GL_RGBA, 1024, 768, GL_RGBA, GL_UNSIGNED_BYTE);
 		tex_gbuffer_albedo->retain();
-		TFTexture2D *tex_gbuffer_normal = TFTexture2D::createEmpty(GL_RG16F, 1024, 768, GL_RG, GL_FLOAT);
+		TFTexture2D *tex_gbuffer_normal = TFTexture2D::createEmpty(GL_RGB16F, 1024, 768, GL_RGB, GL_FLOAT);
 		tex_gbuffer_normal->retain();
 
 		TFRenderBuffer *renderbuffer_depth = TFRenderBuffer::create(GL_DEPTH_COMPONENT, 1024, 768);
@@ -315,9 +315,10 @@ public:
 				glClear(GL_DEPTH_BUFFER_BIT);
 				shader_gbuffer->bind();
 				{
-					glUniformMatrix4fv(shader_gbuffer->getUniformID("M"), 1, GL_FALSE, &model.getMatrix()[0][0]);
-					glUniformMatrix4fv(shader_gbuffer->getUniformID("PV"), 1, GL_FALSE, &(control.getProjectionMatrix() * control.getViewMatirix())[0][0]);
-					glUniformMatrix4fv(shader_gbuffer->getUniformID("M_normal"), 1, GL_TRUE, &(glm::inverse(model.getMatrix()))[0][0]);
+					glm::mat4 VM = control.getViewMatirix() * model.getMatrix();
+					glUniformMatrix4fv(shader_gbuffer->getUniformID("M"), 1, GL_FALSE, &VM[0][0]);
+					glUniformMatrix4fv(shader_gbuffer->getUniformID("PV"), 1, GL_FALSE, &(control.getProjectionMatrix())[0][0]);
+					glUniformMatrix4fv(shader_gbuffer->getUniformID("M_normal"), 1, GL_TRUE, &glm::inverse(VM)[0][0]);
 
 					glEnable(GL_DEPTH_TEST);
 					model.draw(uniforms);
@@ -344,6 +345,8 @@ public:
 					glEnableVertexAttribArray(0);
 					TFFramework::vertexBuffer_quad->bind();
 					glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+					glUniformMatrix4fv(shader_gbuffer_test->getUniformLocation("V"), 1, GL_FALSE, &control.getViewMatirix()[0][0]);
 
 					glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
