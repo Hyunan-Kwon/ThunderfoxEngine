@@ -99,6 +99,7 @@
     <ClInclude Include="TFBuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Shaders\BilateralFilter.cs.glsl" />
     <None Include="Shaders\DeferredTest.fs.glsl" />
     <None Include="Shaders\DirectionalLight.frag" />

@@ -2,6 +2,7 @@
 #define _TFSHADER_H_
 
 #include "gl\glew.h"
+#include "glm\glm.hpp"
 #include "TFHandle.h"
 #include "TFObject.h"
 #include <iostream>
@@ -90,20 +91,16 @@ protected:
 			TFLOG(&errorMessage[0]);
 			TFEXIT("Compling shader failed.");
 		}
+
+		TFLOG("Compling shader program has been done.");
 	}
 public:
-	static TFShader* create(TFShaderUnit *shaderUnit1, TFShaderUnit *shaderUnit2, TFShaderUnit *shaderUnit3 = nullptr){
+	static TFShader* create(TFShaderUnit *shaderUnit1, TFShaderUnit *shaderUnit2 = nullptr, TFShaderUnit *shaderUnit3 = nullptr){
 		std::vector<TFShaderUnit *> shaderUnits;
 		shaderUnits.push_back(shaderUnit1);
-		shaderUnits.push_back(shaderUnit2);
-		if (shaderUnit3 != nullptr){
-			shaderUnits.push_back(shaderUnit3);
-		}
+		if (shaderUnit2 != nullptr){	shaderUnits.push_back(shaderUnit2);		}
+		if (shaderUnit3 != nullptr){	shaderUnits.push_back(shaderUnit3);		}
 		return static_cast<TFShader *>((new TFShader(shaderUnits))->autorelease());
-	}
-
-	static TFShader* create(TFShaderUnit *shaderUnit){
-		return static_cast<TFShader *>((new TFShader(std::vector<TFShaderUnit *>(1, shaderUnit)))->autorelease());
 	}
 
 	static TFShader* createWithFile(const char *vertex_shader_filename, const char *fragment_shader_filename, const char *geometry_shader_filename = nullptr){
@@ -128,21 +125,48 @@ public:
 	}
 
 	//@ Get uniform ID using glUniformLocation().
-	GLint getUniformLocation(const char *uniformLocation) const{
-		return glGetUniformLocation(m_id, uniformLocation);
+	GLint getUniformLocation(const char *location){
+		auto &found = m_uniformIDs.find(location);
+		if (found == m_uniformIDs.end()){
+			GLint uniformID = glGetUniformLocation(m_id, location);
+			m_uniformIDs[location] = uniformID;
+			TFLOG("New uniform location \"%s\" is set.", location);
+			return uniformID;
+		}
+		return found->second;
 	}
 
 	//@ Save and map uniform ID
-	void setUniformLocation(const char *uniformLcoation){
-		m_uniformIDs[uniformLcoation] = glGetUniformLocation(m_id, uniformLcoation);
+	void setUniformLocation(const char *location){
+		m_uniformIDs[location] = glGetUniformLocation(m_id, location);
 	}
 
-	//@ Get mapped uniform ID.
-	GLint getUniformID(const char *uniformLocation) const{
+	//@ Get mapped uniform ID. If not exists, an assertion would fail.
+	GLint getUniformID(const char *location) const{
 		//return m_uniformIDs[uniformLocation];
-		auto &res = m_uniformIDs.find(uniformLocation);
-		TFASSERT(res != m_uniformIDs.end(), "Getting uniform ID failed.");
-		return res->second;
+		auto &found = m_uniformIDs.find(location);
+		TFASSERT(found != m_uniformIDs.end(), "Getting uniform ID failed.");
+		return found->second;
+	}
+
+	void setUniform(const char *location, GLint value){
+		glUniform1i(getUniformLocation(location), value);
+	}
+
+	void setUniform(const char *location, GLfloat value){
+		glUniform1f(getUniformLocation(location), value);
+	}
+
+	void setUniform(const char *location, const glm::vec3 &value){
+		glUniform3f(getUniformLocation(location), value.x, value.y, value.z);
+	}
+
+	void setUniform(const char *location, const glm::vec4 &value){
+		glUniform4f(getUniformLocation(location), value.x, value.y, value.z, value.w);
+	}
+
+	void setUniform(const char *location, const glm::mat4 &value, GLboolean transpose = GL_FALSE){
+		glUniformMatrix4fv(getUniformLocation(location), 1, transpose, &(value[0][0]));
 	}
 };
 

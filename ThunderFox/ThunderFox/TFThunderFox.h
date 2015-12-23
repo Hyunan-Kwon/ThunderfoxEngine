@@ -316,9 +316,12 @@ public:
 				shader_gbuffer->bind();
 				{
 					glm::mat4 VM = control.getViewMatirix() * model.getMatrix();
-					glUniformMatrix4fv(shader_gbuffer->getUniformID("M"), 1, GL_FALSE, &VM[0][0]);
-					glUniformMatrix4fv(shader_gbuffer->getUniformID("PV"), 1, GL_FALSE, &(control.getProjectionMatrix())[0][0]);
-					glUniformMatrix4fv(shader_gbuffer->getUniformID("M_normal"), 1, GL_TRUE, &glm::inverse(VM)[0][0]);
+					//glUniformMatrix4fv(shader_gbuffer->getUniformID("M"), 1, GL_FALSE, &VM[0][0]);
+					//glUniformMatrix4fv(shader_gbuffer->getUniformID("PV"), 1, GL_FALSE, &(control.getProjectionMatrix())[0][0]);
+					//glUniformMatrix4fv(shader_gbuffer->getUniformID("M_normal"), 1, GL_TRUE, &glm::inverse(VM)[0][0]);
+					shader_gbuffer->setUniform("M", VM);
+					shader_gbuffer->setUniform("PV", control.getProjectionMatrix());
+					shader_gbuffer->setUniform("M_normal", glm::inverse(VM), GL_TRUE);
 
 					glEnable(GL_DEPTH_TEST);
 					model.draw(uniforms);
@@ -346,7 +349,8 @@ public:
 					TFFramework::vertexBuffer_quad->bind();
 					glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-					glUniformMatrix4fv(shader_gbuffer_test->getUniformLocation("V"), 1, GL_FALSE, &control.getViewMatirix()[0][0]);
+					//glUniformMatrix4fv(shader_gbuffer_test->getUniformLocation("V"), 1, GL_FALSE, &control.getViewMatirix()[0][0]);
+					shader_gbuffer_test->setUniform("V", control.getViewMatirix());
 
 					glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
