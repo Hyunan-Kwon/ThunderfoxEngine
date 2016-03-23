@@ -92,3 +92,72 @@
 //
 //
 //#endif
+
+#pragma once
+
+#include "gl\glfw3.h"
+#include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
+#include "TFObject.h"
+
+class TFCamera : public TFRef{
+protected:
+	GLFWwindow *ext_window;
+
+	glm::vec3 m_position;
+	glm::vec3 m_direction;
+	
+	glm::mat4 m_viewMatrix;
+	glm::mat4 m_invViewMatrix;
+	glm::mat4 m_projectionMatrix;
+	glm::mat4 m_invProjectionMatrix;
+
+	TFCamera(GLFWwindow *window)
+		: ext_window(window)
+	{
+
+	}
+
+public:
+	virtual ~TFCamera() { }
+};
+
+class TFPerspectiveCamera : public TFCamera{
+protected:
+	float m_fov, m_aspect, m_near, m_far;
+
+	TFPerspectiveCamera(GLFWwindow *window)
+		: TFCamera(window)
+	{
+
+	}
+
+public:
+	static TFPerspectiveCamera* create(GLFWwindow *window){
+		return static_cast<TFPerspectiveCamera *>((new TFPerspectiveCamera(window))->autorelease());
+	}
+
+	virtual ~TFPerspectiveCamera() { }
+
+	void setProjection(float fov, float aspect, float near, float far){
+		m_fov = fov;
+		m_aspect = aspect;
+		m_near = near;
+		m_far = far;
+
+		m_projectionMatrix = glm::perspective<float>(fov, aspect, near, far);
+		m_invProjectionMatrix = glm::inverse(m_projectionMatrix);
+	}
+
+	//@ Get the view matrix which is calculated at every frame.
+	const glm::mat4& getViewMatrix() const			{ return m_viewMatrix;					}
+	
+	//@ Get the inverse view matrix.
+	const glm::mat4& getInvViewMatrix() const		{ return m_invViewMatrix;				}
+	
+	//@ Get the projection matrix.
+	const glm::mat4& getProjectionMatrix() const	{ return m_projectionMatrix;			}
+	
+	//@ Get the inverse projection matrix;
+	const glm::mat4& getInvProjectionMatrix() const	{ return m_invProjectionMatrix;			}
+};
