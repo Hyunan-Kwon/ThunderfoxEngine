@@ -93,6 +93,7 @@ protected:
 		}
 
 		TFLOG("Compling shader program has been done.");
+		glUseProgram(m_id);
 	}
 public:
 	static TFShader* create(TFShaderUnit *shaderUnit1, TFShaderUnit *shaderUnit2 = nullptr, TFShaderUnit *shaderUnit3 = nullptr){
@@ -155,6 +156,10 @@ public:
 
 	void setUniform(const char *location, GLfloat value){
 		glUniform1f(getUniformLocation(location), value);
+	}
+
+	void setUniform(const char *location, const glm::vec2 &value){
+		glUniform2f(getUniformLocation(location), value.x, value.y);
 	}
 
 	void setUniform(const char *location, const glm::vec3 &value){
