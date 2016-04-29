@@ -12,10 +12,12 @@ uniform mat4 V;
 uniform vec2 viewport;
 uniform int nSamples;
 
-vec3 decodeNormal(vec2 normal){
-	float z = length(normal.xy) * 2.0 - 1.0;
-	z = -z;
-	return vec3(normalize(normal.xy) * sqrt(1.0 - z * z), z);
+uniform vec3 lightColor;
+uniform vec3 lightDirection_worldspace;
+
+vec3 decodeNormal(vec2 enc){
+	float z = dot(enc.xy, enc.xy) * 2.0 - 1.0;
+	return vec3(normalize(enc.xy) * sqrt(1.0 - z * z), -z);
 }
 
 vec3 calcSample(int n, ivec2 imageCoord){
@@ -23,9 +25,10 @@ vec3 calcSample(int n, ivec2 imageCoord){
 	vec3 material_diffuse = albedo.rgb;
 	float material_shininess = albedo.a;
 
-	vec3 position = texelFetch(tex_position, imageCoord, n).xyz;
-	vec3 L = normalize(vec3(V * vec4(0, 1, 0, 1.0)).xyz - position);
-	//vec3 N = texture(tex_normal, UV).xyz;
+	vec3 position = (V * vec4(texelFetch(tex_position, imageCoord, n).xyz, 1.0)).xyz;
+	//vec3 L = normalize(vec3(V * vec4(0, 1, 0, 1.0)).xyz - position);
+	vec3 L = normalize((V * vec4(lightDirection_worldspace, 0.0)).xyz);
+	//vec3 N = texelFetch(tex_normal, imageCoord, n).xyz;
 	vec3 N = normalize(decodeNormal(texelFetch(tex_normal, imageCoord, n).xy));
 	vec3 E = normalize(vec3(0, 0, 0) - position);
 	//vec3 R = reflect(-L, N);
@@ -35,7 +38,8 @@ vec3 calcSample(int n, ivec2 imageCoord){
 	//float specularIntensity = clamp(pow(dot(E, R), material_shininess), 0.0, 1.0);
 	float specularIntensity = 0.0;
 
-	return diffuseIntensity * material_diffuse + specularIntensity * vec3(1.0);
+	return diffuseIntensity * material_diffuse * lightColor
+			 + specularIntensity * lightColor;
 }
 
 void main(){
@@ -44,5 +48,5 @@ void main(){
 		result += calcSample(i, ivec2(UV * viewport));
 	}
 	result /= 4;
-	FragColor = vec4(result, 1.0);
+	FragColor = vec4(min(result, 1.0), 1.0);
 }

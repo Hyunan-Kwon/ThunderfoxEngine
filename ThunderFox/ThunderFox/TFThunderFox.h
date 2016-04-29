@@ -190,6 +190,7 @@ public:
 		TFShader *shader_gbuffer_test = TFShader::createWithFile("shaders/Screen.vert", "shaders/DeferredTest.fs.glsl");
 		shader_gbuffer_test->setUniform("viewport", glm::vec2(1024.0f, 768.0f));
 		shader_gbuffer_test->setUniform("nSamples", 4);
+		shader_gbuffer_test->setUniform("lightColor", lightColor);
 		shader_gbuffer_test->retain();
 		TFCHKGL(__FILE__, __LINE__, "", true);
 
@@ -269,6 +270,7 @@ public:
 					glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
 					shader_gbuffer_test->setUniform("V", m_control->getViewMatirix());
+					shader_gbuffer_test->setUniform("lightDirection_worldspace", lightPosition);
 
 					glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 

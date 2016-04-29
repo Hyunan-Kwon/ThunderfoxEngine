@@ -20,4 +20,5 @@ void main(){
 	position = Position_worldspace;
 	albedo = vec4(texture(tex_diffuse, Texcoord).rgb, MaterialShininess);
 	normal = vec3(encodeNormal(normalize(Normal_worldspace)), 1.0);
+	//normal = normalize(Normal_worldspace);
 }
