@@ -3,7 +3,7 @@
 
 #include "TFObject.h"
 #include "TFShader.h"
-#include "TFCommon.h"
+#include "TFDictionary.h"
 
 class ResourceManager{
 private:

@@ -1,14 +1,13 @@
 #ifndef _TFMODEL_H_
 #define _TFMODEL_H_
 
-#include "gl\glew.h"
-#include "glm\glm.hpp"
 #include "TFObject.h"
 #include "TFTransform.h"
 #include "TFBuffer.h"
 #include "TFTexture.h"
 #include "TFHandle.h"
 #include "TFCommon.h"
+#include "TFDictionary.h"
 #include <vector>
 #include <fstream>
 

@@ -1,9 +1,16 @@
 #pragma once
 
-#define GLFW_DLL
-#include "gl\glew.h"
-#include "gl\glfw3.h"
-#include "glm\glm.hpp"
+#ifdef __APPLE__
+	#include <gl/glew.h>
+	#include <GLFW/glfw3.h>
+	#include <freeimage/freeimage.h>
+#else
+	#include "gl/glew.h"
+	#include "gl/glfw3.h"
+	#include "FreeImage/FreeImage.h"
+#endif
+
+#include "glm/glm.hpp"
 #include "TFObject.h"
 #include "TFCommon.h"
 #include "TFControl.h"
@@ -26,11 +33,6 @@
 #include <string>
 #include <vector>
 #include <deque>
-
-#pragma comment(lib, "gl\\glew32.lib")
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "gl\\glfw3dll.lib")
-#pragma comment(lib, "FreeImage\\FreeImage.lib")
 
 //void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 

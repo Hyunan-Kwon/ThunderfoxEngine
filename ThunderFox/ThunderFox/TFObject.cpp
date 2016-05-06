@@ -1,8 +1,8 @@
 #include "TFObject.h"
 #include "TFAutoreleasePool.h"
 #include "TFHandle.h"
-#include <cassert>
 
+//@ Tracker fo not released objects.
 std::set<TFRef *> TFRef::m_tracker;
 
 TFRef::TFRef()
@@ -54,41 +54,3 @@ void TFRef::release_all() {
 		}
 	}
 }
-
-
-//TFObject::~TFObject() {
-//	if (m_parent != nullptr){
-//		m_parent->removeChild(this);
-//	}
-//	for (std::list<TFObject *>::iterator it = m_childs.begin(); it != m_childs.end(); ++it){
-//		(*it)->removeFromParent();
-//	}
-//}
-//
-//void TFObject::release() {
-//	assert(m_refCount > 0);
-//
-//	if (--m_refCount == 0){
-//		delete this;
-//	};
-//}
-//
-//void TFObject::autorelease() {
-//	TFAutoreleasePool::getInstance()->dive(this);
-//}
-//
-//void TFObject::addChild(TFObject *child) {
-//	child->m_parent = this;
-//	child->retain();
-//	m_childs.push_back(child);
-//}
-//
-//void TFObject::removeChild(TFObject *child) {
-//	child->m_parent = nullptr;
-//	child->release();
-//	m_childs.remove(child);
-//}
-//
-//void TFObject::removeFromParent() {
-//	m_parent->removeChild(this);
-//}

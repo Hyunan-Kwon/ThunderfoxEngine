@@ -1,4 +1,5 @@
 *.sdf
 *.suo
+*.dll
 Debug
 Release

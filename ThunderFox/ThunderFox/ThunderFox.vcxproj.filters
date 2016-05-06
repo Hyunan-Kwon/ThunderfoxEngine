@@ -113,6 +113,9 @@
     <ClInclude Include="..\tinyobjloader\tiny_obj_loader.h">
       <Filter>External library sources\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="TFDictionary.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\DirectionalLight.frag">

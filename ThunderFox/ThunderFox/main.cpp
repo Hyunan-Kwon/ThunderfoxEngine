@@ -1,6 +1,5 @@
 #include <iostream>
 #include "TFThunderFox.h"
-#include "glm\glm.hpp"
 
 using namespace std;
 

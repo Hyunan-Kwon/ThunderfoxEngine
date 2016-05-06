@@ -30,6 +30,7 @@ public:
 		std::vector<char> code;
 		std::ifstream stream(filename, std::ios::binary | std::ios::ate);
 		if (stream.is_open()){
+			// tellg() may not work on a huge file.
 			unsigned int fileSize = stream.tellg();
 			stream.close();
 			stream.clear();
@@ -127,7 +128,7 @@ public:
 
 	//@ Get uniform ID using glUniformLocation().
 	GLint getUniformLocation(const char *location){
-		auto &found = m_uniformIDs.find(location);
+		auto found = m_uniformIDs.find(location);
 		if (found == m_uniformIDs.end()){
 			GLint uniformID = glGetUniformLocation(m_id, location);
 			m_uniformIDs[location] = uniformID;
@@ -145,7 +146,7 @@ public:
 	//@ Get mapped uniform ID. If not exists, an assertion would fail.
 	GLint getUniformID(const char *location) const{
 		//return m_uniformIDs[uniformLocation];
-		auto &found = m_uniformIDs.find(location);
+		auto found = m_uniformIDs.find(location);
 		TFASSERT(found != m_uniformIDs.end(), "Getting uniform ID failed.");
 		return found->second;
 	}
